@@ -42,7 +42,22 @@ XmlGuideComponent::XmlGuideComponent ()
     XmlGuideTextarea->setColour (TextEditor::textColourId, Colours::white);
     XmlGuideTextarea->setColour (TextEditor::backgroundColourId, Colour (0x000d2639));
     XmlGuideTextarea->setColour (TextEditor::shadowColourId, Colour (0x00000000));
-    XmlGuideTextarea->setText (TRANS("bla bla"));
+    XmlGuideTextarea->setText (TRANS(
+      "
+<jmididata>
+  <events>
+    <event id=\"mypreset\">
+      <midi type=\"pc\" channel=\"4\" key=\"11\" value=\"127\" />
+      <midi type=\"noteon\" channel=\"11\" key=\"0\" value=\"127\" />
+    </event>
+  </events>
+  <listeners>
+    <listener channel=\"2\" type=\"cc\" key=\"11\" >
+      <trigger id=\"mypreset\" />
+    </listener>
+  </listeners>
+</jmididata>
+      "));
 
 
     //[UserPreSize]
