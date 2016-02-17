@@ -42,26 +42,25 @@ XmlGuideComponent::XmlGuideComponent ()
     XmlGuideTextarea->setColour (TextEditor::textColourId, Colours::white);
     XmlGuideTextarea->setColour (TextEditor::backgroundColourId, Colour (0x000d2639));
     XmlGuideTextarea->setColour (TextEditor::shadowColourId, Colour (0x00000000));
-    XmlGuideTextarea->setText (TRANS(
-      "
-<jmididata>
-  <events>
-    <event id=\"mypreset\">
-      <midi type=\"pc\" channel=\"4\" key=\"11\" value=\"127\" />
-      <midi type=\"noteon\" channel=\"11\" key=\"0\" value=\"127\" />
-    </event>
-  </events>
-  <listeners>
-    <listener channel=\"2\" type=\"cc\" key=\"11\" >
-      <trigger id=\"mypreset\" />
-    </listener>
-  </listeners>
-</jmididata>
-      "));
 
 
     //[UserPreSize]
-    //[/UserPreSize]
+     XmlGuideTextarea->setText (TRANS(
+"<jmididata>\n\
+  <events>\n\
+    <event id=\"mypreset\">\n\
+      <midi type=\"pc\" channel=\"4\" key=\"11\" value=\"127\" />\n\
+      <midi type=\"noteon\" channel=\"11\" key=\"0\" value=\"127\" />\n\
+    </event>\n\
+  </events>\n\
+  <listeners>\n\
+    <listener channel=\"2\" type=\"cc\" key=\"11\" >\n\
+      <trigger id=\"mypreset\" />\n\
+    </listener>\n\
+  </listeners>\n\
+</jmididata>\n\
+      "));
+   //[/UserPreSize]
 
     setSize (600, 400);
 

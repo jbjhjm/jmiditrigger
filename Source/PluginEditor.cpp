@@ -173,7 +173,7 @@ BEGIN_JUCER_METADATA
                  constructorParams="JMidiTriggerAudioProcessor&amp; OwnerFilter"
                  variableInitialisers="AudioProcessorEditor(ownerFilter)" snapPixels="8"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
-                 initialWidth="600" initialHeight="400">
+                 initialWidth="400" initialHeight="300">
   <BACKGROUND backgroundColour="ff000000">
     <TEXT pos="0 55 0M 75M" fill="solid: 70b0d879" hasStroke="0" text="SECTOR"
           fontname="Impact" fontsize="125" bold="0" italic="0" justification="36"/>
