@@ -53,11 +53,11 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-	String currentStatus = "___";
-	XmlDocument* xmlDoc;
+    String currentStatus = "___";
+    XmlDocument* xmlDoc;
 
-	bool loadXmlFile(const String& filePath);
-	bool loadXmlFile(const File& fi);
+    bool loadXmlFile(const String& filePath);
+    bool loadXmlFile(const File& fi);
 
 private:
     //==============================================================================

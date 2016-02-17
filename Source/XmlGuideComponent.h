@@ -17,12 +17,11 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_B633E1298AD05EAC__
-#define __JUCE_HEADER_B633E1298AD05EAC__
+#ifndef __JUCE_HEADER_8957D8CE3292A454__
+#define __JUCE_HEADER_8957D8CE3292A454__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
-#include "PluginProcessor.h"
 //[/Headers]
 
 
@@ -35,25 +34,19 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class JMidiTriggerAudioProcessorEditor  : public AudioProcessorEditor,
-                                          public Timer,
-                                          public ButtonListener
+class XmlGuideComponent  : public Component
 {
 public:
     //==============================================================================
-    JMidiTriggerAudioProcessorEditor (JMidiTriggerAudioProcessor& p);
-    ~JMidiTriggerAudioProcessorEditor();
+    XmlGuideComponent ();
+    ~XmlGuideComponent();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void timerCallback();
-    JMidiTriggerAudioProcessor* getProcessor() const {return static_cast <JMidiTriggerAudioProcessor*>(getAudioProcessor());}
-    void showFileDialogue();
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
@@ -62,19 +55,14 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    JMidiTriggerAudioProcessor& processor;
-    ScopedPointer<TextButton> selectFileButton;
-    ScopedPointer<Label> label;
-    ScopedPointer<TabbedComponent> tabbedComponent;
+    ScopedPointer<TextEditor> XmlGuideTextarea;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JMidiTriggerAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XmlGuideComponent)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_B633E1298AD05EAC__
+#endif   // __JUCE_HEADER_8957D8CE3292A454__

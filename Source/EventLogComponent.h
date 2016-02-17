@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_D96FF1F697034442__
-#define __JUCE_HEADER_D96FF1F697034442__
+#ifndef __JUCE_HEADER_507BFAA26CC5FEC2__
+#define __JUCE_HEADER_507BFAA26CC5FEC2__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
@@ -34,13 +34,12 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ChooseFileButton  : public Component,
-                          public ButtonListener
+class EventLogComponent  : public Component
 {
 public:
     //==============================================================================
-    ChooseFileButton ();
-    ~ChooseFileButton();
+    EventLogComponent ();
+    ~EventLogComponent();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -48,7 +47,6 @@ public:
 
     void paint (Graphics& g);
     void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
@@ -57,14 +55,14 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> fileButton;
+    ScopedPointer<TextEditor> EventlogTextarea;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChooseFileButton)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EventLogComponent)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_D96FF1F697034442__
+#endif   // __JUCE_HEADER_507BFAA26CC5FEC2__

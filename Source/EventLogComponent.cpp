@@ -20,40 +20,47 @@
 //[Headers] You can add your own extra header files here...
 //[/Headers]
 
-#include "ChooseFileButton.h"
+#include "EventLogComponent.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
 
 //==============================================================================
-ChooseFileButton::ChooseFileButton ()
+EventLogComponent::EventLogComponent ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (fileButton = new TextButton ("fileButton"));
-    fileButton->setButtonText (TRANS("Choose MIDI file"));
-    fileButton->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop);
-    fileButton->addListener (this);
+    addAndMakeVisible (EventlogTextarea = new TextEditor ("EventlogTextarea"));
+    EventlogTextarea->setMultiLine (true);
+    EventlogTextarea->setReturnKeyStartsNewLine (true);
+    EventlogTextarea->setReadOnly (true);
+    EventlogTextarea->setScrollbarsShown (true);
+    EventlogTextarea->setCaretVisible (false);
+    EventlogTextarea->setPopupMenuEnabled (false);
+    EventlogTextarea->setColour (TextEditor::textColourId, Colours::white);
+    EventlogTextarea->setColour (TextEditor::backgroundColourId, Colour (0x000c2131));
+    EventlogTextarea->setColour (TextEditor::shadowColourId, Colour (0x00000000));
+    EventlogTextarea->setText (TRANS("bla bla"));
 
 
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (500, 50);
+    setSize (600, 400);
 
 
     //[Constructor] You can add your own custom stuff here..
     //[/Constructor]
 }
 
-ChooseFileButton::~ChooseFileButton()
+EventLogComponent::~EventLogComponent()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    fileButton = nullptr;
+    EventlogTextarea = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -61,40 +68,23 @@ ChooseFileButton::~ChooseFileButton()
 }
 
 //==============================================================================
-void ChooseFileButton::paint (Graphics& g)
+void EventLogComponent::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
-
-    g.fillAll (Colours::white);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
 
-void ChooseFileButton::resized()
+void EventLogComponent::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    fileButton->setBounds (8, 8, 904, 64);
+    EventlogTextarea->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
-}
-
-void ChooseFileButton::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == fileButton)
-    {
-        //[UserButtonCode_fileButton] -- add your button handler code here..
-        //[/UserButtonCode_fileButton]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 
@@ -112,14 +102,15 @@ void ChooseFileButton::buttonClicked (Button* buttonThatWasClicked)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="ChooseFileButton" componentName=""
+<JUCER_COMPONENT documentType="Component" className="EventLogComponent" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="500" initialHeight="50">
-  <BACKGROUND backgroundColour="ffffffff"/>
-  <TEXTBUTTON name="fileButton" id="dcc2c2547f08d974" memberName="fileButton"
-              virtualName="" explicitFocusOrder="0" pos="8 8 904 64" buttonText="Choose MIDI file"
-              connectedEdges="7" needsCallback="1" radioGroupId="0"/>
+                 fixedSize="0" initialWidth="600" initialHeight="400">
+  <BACKGROUND backgroundColour="42571c"/>
+  <TEXTEDITOR name="EventlogTextarea" id="9164189f3c8afac2" memberName="EventlogTextarea"
+              virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" textcol="ffffffff"
+              bkgcol="c2131" shadowcol="0" initialText="bla bla" multiline="1"
+              retKeyStartsLine="1" readonly="1" scrollbars="1" caret="0" popupmenu="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

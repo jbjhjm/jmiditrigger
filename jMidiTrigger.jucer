@@ -1,50 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="eLwJdx" name="jMidiTrigger" projectType="audioplug" version="1.0.0"
+<JUCERPROJECT id="XcH1nb" name="jMidiTrigger" projectType="audioplug" version="1.0.0"
               bundleIdentifier="com.yourcompany.jMidiTrigger" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="0" buildRTAS="0" buildAAX="0"
-              pluginName="jMidiTrigger" pluginDesc="Send arbitrary MIDI data triggered by MIDI in"
-              pluginManufacturer="Jannik Mewes" pluginManufacturerCode="JaMe"
-              pluginCode="jmTr" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="1"
-              pluginProducesMidiOut="1" pluginIsMidiEffectPlugin="1" pluginSilenceInIsSilenceOut="0"
+              pluginName="jMidiTrigger" pluginDesc="jMidiTrigger" pluginManufacturer="yourcompany"
+              pluginManufacturerCode="JaMe" pluginCode="MiTr" pluginChannelConfigs=""
+              pluginIsSynth="0" pluginWantsMidiIn="1" pluginProducesMidiOut="1"
+              pluginIsMidiEffectPlugin="1" pluginSilenceInIsSilenceOut="0"
               pluginEditorRequiresKeys="0" pluginAUExportPrefix="jMidiTriggerAU"
               pluginRTASCategory="" aaxIdentifier="com.yourcompany.jMidiTrigger"
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="4.1.0"
-              companyName="Jannik Mewes" companyWebsite="jannikmewes.de" companyEmail="web@jannikmewes.de">
-  <MAINGROUP id="dhZwNS" name="jMidiTrigger">
-    <GROUP id="{35C24D7E-9A44-6270-730A-624C9F5F50D2}" name="Source">
-      <FILE id="tNDd04" name="PluginProcessor.cpp" compile="1" resource="0"
+              companyName="Jannik Mewes" companyWebsite="jannikmewes.de" companyEmail="web@jannikmewes.de"
+              pluginVSTCategory="Tools">
+  <MAINGROUP id="MLKSr7" name="jMidiTrigger">
+    <GROUP id="{45FEC1E1-20A9-762C-FBF1-0A6392C22559}" name="Source">
+      <FILE id="sGSy27" name="XmlGuideComponent.cpp" compile="1" resource="0"
+            file="Source/XmlGuideComponent.cpp"/>
+      <FILE id="cfwu9A" name="XmlGuideComponent.h" compile="0" resource="0"
+            file="Source/XmlGuideComponent.h"/>
+      <FILE id="ZgtM5O" name="AvailCmdsComponent.cpp" compile="1" resource="0"
+            file="Source/AvailCmdsComponent.cpp"/>
+      <FILE id="FMLNfe" name="AvailCmdsComponent.h" compile="0" resource="0"
+            file="Source/AvailCmdsComponent.h"/>
+      <FILE id="lBfdGi" name="EventLogComponent.cpp" compile="1" resource="0"
+            file="Source/EventLogComponent.cpp"/>
+      <FILE id="r8fuBO" name="EventLogComponent.h" compile="0" resource="0"
+            file="Source/EventLogComponent.h"/>
+      <FILE id="E7FSac" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
-      <FILE id="D3HgYq" name="PluginProcessor.h" compile="0" resource="0"
+      <FILE id="r8jIji" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="VQgyWO" name="PluginEditor.cpp" compile="1" resource="0"
+      <FILE id="obHlsF" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="CDTDYi" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="qiMb8j" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <VS2013 targetFolder="Builds/VisualStudio2013" vstFolder="" vst3Folder="">
+    <VS2013 targetFolder="Builds/VisualStudio2013">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        isDebug="1" optimisation="1" targetName="jMidiTrigger"/>
-        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        isDebug="0" optimisation="3" targetName="jMidiTrigger"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../juce/modules"/>
-        <MODULEPATH id="juce_events" path="../juce/modules"/>
-        <MODULEPATH id="juce_graphics" path="../juce/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../juce/modules"/>
-        <MODULEPATH id="juce_video" path="../juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../juce/modules"/>
+        <MODULEPATH id="juce_core" path="../projucer/modules"/>
+        <MODULEPATH id="juce_events" path="../projucer/modules"/>
+        <MODULEPATH id="juce_graphics" path="../projucer/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../projucer/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../projucer/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../projucer/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../projucer/modules"/>
+        <MODULEPATH id="juce_video" path="../projucer/modules"/>
+        <MODULEPATH id="juce_opengl" path="../projucer/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../projucer/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../projucer/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../projucer/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../projucer/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../projucer/modules"/>
       </MODULEPATHS>
     </VS2013>
   </EXPORTFORMATS>

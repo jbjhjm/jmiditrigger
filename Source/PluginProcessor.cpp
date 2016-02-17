@@ -15,7 +15,6 @@
 //==============================================================================
 JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
 {
-	//this->xmlDoc;
 }
 
 JMidiTriggerAudioProcessor::~JMidiTriggerAudioProcessor()
@@ -48,7 +47,7 @@ bool JMidiTriggerAudioProcessor::producesMidi() const
 
 bool JMidiTriggerAudioProcessor::silenceInProducesSilenceOut() const
 {
-    return true;
+    return false;
 }
 
 double JMidiTriggerAudioProcessor::getTailLengthSeconds() const
@@ -139,37 +138,39 @@ void JMidiTriggerAudioProcessor::setStateInformation (const void* data, int size
     // whose contents will have been created by the getStateInformation() call.
 }
 
+//==============================================================================
+
 bool JMidiTriggerAudioProcessor::loadXmlFile(const File& fi)
 {
-	this->currentStatus += "\n " + fi.getFullPathName();
-	this->currentStatus += "\n xxx";
-	return true;
-	/*if (fi.exists())
-	{
-	this->currentStatus += "\n File found.";
-	this->xmlDoc = &XmlDocument(fi);
-	ScopedPointer<XmlElement> xmlRoot(this->xmlDoc->getDocumentElement());
+    this->currentStatus += "\n " + fi.getFullPathName();
+    this->currentStatus += "\n xxx";
+    return true;
+    /*if (fi.exists())
+    {
+    this->currentStatus += "\n File found.";
+    this->xmlDoc = &XmlDocument(fi);
+    ScopedPointer<XmlElement> xmlRoot(this->xmlDoc->getDocumentElement());
 
-	if (xmlRoot == nullptr)
-	{
-	this->currentStatus += "\n Parse error: " + this->xmlDoc->getLastParseError();
-	return false;
-	}
-	else
-	{
-	this->currentStatus += "\n Root Tag name = " + xmlRoot->getTagName();
-	return true;
-	}
-	}
-	else {
-	this->currentStatus += "\n Error: File not found.";
-	return false;
-	}*/
+    if (xmlRoot == nullptr)
+    {
+    this->currentStatus += "\n Parse error: " + this->xmlDoc->getLastParseError();
+    return false;
+    }
+    else
+    {
+    this->currentStatus += "\n Root Tag name = " + xmlRoot->getTagName();
+    return true;
+    }
+    }
+    else {
+    this->currentStatus += "\n Error: File not found.";
+    return false;
+    }*/
 }
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const String& filePath)
 {
-	return this->loadXmlFile(File(filePath));
+    return this->loadXmlFile(File(filePath));
 }
 
 //==============================================================================
