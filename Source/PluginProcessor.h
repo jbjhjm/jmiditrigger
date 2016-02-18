@@ -12,6 +12,14 @@
 #define PLUGINPROCESSOR_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "pugixml.hpp" 
+//#pragma comment( lib, "pugixml" )
+
+/*struct MyListener : public Value::Listener
+{
+	Class& parent;
+	void valueChanged(Value& v)  { parent.handleMyValueChanged(v); }
+};*/
 
 
 //==============================================================================
@@ -54,13 +62,26 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     String currentStatus = "___";
-    XmlDocument* xmlDoc;
+
+	XmlElement* pluginState;
 
     bool loadXmlFile(const String& filePath);
     bool loadXmlFile(const File& fi);
+	bool reloadFile();
+	void generateXmlDocumentation();
+	void cacheXmlData();
+	void log(String txt);
+
+	Value xmlFilePath;
+	Value statusLog;
+	Value midiDataInfo;
+	pugi::xml_document xmlDoc;
 
 private:
     //==============================================================================
+
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JMidiTriggerAudioProcessor)
 };
 

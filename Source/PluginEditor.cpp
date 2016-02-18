@@ -36,29 +36,38 @@ JMidiTriggerAudioProcessorEditor::JMidiTriggerAudioProcessorEditor (JMidiTrigger
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (selectFileButton = new TextButton ("selectFileButton"));
-    selectFileButton->setButtonText (TRANS("select MIDI file"));
-    selectFileButton->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
-    selectFileButton->addListener (this);
-    selectFileButton->setColour (TextButton::buttonColourId, Colour (0xff819f3c));
-    selectFileButton->setColour (TextButton::buttonOnColourId, Colour (0xff8cbc30));
-    selectFileButton->setColour (TextButton::textColourOnId, Colours::white);
-    selectFileButton->setColour (TextButton::textColourOffId, Colours::white);
+	addAndMakeVisible(selectFileButton = new TextButton("selectFileButton"));
+	selectFileButton->setButtonText(TRANS("select MIDI data file"));
+	selectFileButton->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+	selectFileButton->addListener(this);
+	selectFileButton->setColour(TextButton::buttonColourId, Colour(0xff819f3c));
+	selectFileButton->setColour(TextButton::buttonOnColourId, Colour(0xff8cbc30));
+	selectFileButton->setColour(TextButton::textColourOnId, Colours::white);
+	selectFileButton->setColour(TextButton::textColourOffId, Colours::white);
 
-    addAndMakeVisible (label = new Label ("selectFileLabel",
+	addAndMakeVisible(refreshFileButton = new TextButton("refreshFileButton"));
+	refreshFileButton->setButtonText(TRANS("reload"));
+	refreshFileButton->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+	refreshFileButton->addListener(this);
+	refreshFileButton->setColour(TextButton::buttonColourId, Colour(0xff819f3c));
+	refreshFileButton->setColour(TextButton::buttonOnColourId, Colour(0xff8cbc30));
+	refreshFileButton->setColour(TextButton::textColourOnId, Colours::white);
+	refreshFileButton->setColour(TextButton::textColourOffId, Colours::white);
+
+	addAndMakeVisible(filepathLabel = new Label("filepathLabel",
                                           TRANS("select a MIDI instructions XML file to use")));
-    label->setFont (Font (15.00f, Font::plain));
-    label->setJustificationType (Justification::centredLeft);
-    label->setEditable (false, false, false);
-    label->setColour (Label::backgroundColourId, Colour (0xff0c333c));
-    label->setColour (Label::textColourId, Colours::white);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	filepathLabel->setFont(Font(15.00f, Font::plain));
+	filepathLabel->setJustificationType(Justification::centredLeft);
+	filepathLabel->setEditable(false, false, false);
+	filepathLabel->setColour(Label::backgroundColourId, Colour(0xff0c333c));
+	filepathLabel->setColour(Label::textColourId, Colours::white);
+	filepathLabel->setColour(TextEditor::textColourId, Colours::black);
+	filepathLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtBottom));
     tabbedComponent->setTabBarDepth (30);
-    tabbedComponent->addTab (TRANS("Event Log"), Colour (0x5f197980), new EventLogComponent(), true);
-    tabbedComponent->addTab (TRANS("Available Commands"), Colour (0x5f197980), new AvailCmdsComponent(), true);
+    tabbedComponent->addTab (TRANS("Event Log"), Colour (0x5f197980), new EventLogComponent(p), true);
+    tabbedComponent->addTab (TRANS("Available Commands"), Colour (0x5f197980), new AvailCmdsComponent(p), true);
     tabbedComponent->addTab (TRANS("MIDI XML Example"), Colour (0x5f197980), new XmlGuideComponent(), true);
     tabbedComponent->setCurrentTabIndex (0);
 
@@ -70,7 +79,21 @@ JMidiTriggerAudioProcessorEditor::JMidiTriggerAudioProcessorEditor (JMidiTrigger
 
 
     //[Constructor] You can add your own custom stuff here..
+
     //startTimer(200);//starts timer with interval of 200mS
+	/*
+	struct sFilepathListener : public Value::Listener
+	{
+		sFilepathListener::sFilepathListener(ScopedPointer<Label> p) :parent(p) {  }
+		ScopedPointer<Label> parent;
+		void valueChanged(Value & v)  { 
+			// parent->setText(v.getValue().toString(), juce::NotificationType::sendNotification); 
+		}
+	};
+	sFilepathListener filepathListener(filepathLabel);
+	*/
+	//p.xmlFilePath.addListener(this);
+	filepathLabel->getTextValue().referTo(p.xmlFilePath);
     //[/Constructor]
 }
 
@@ -80,7 +103,8 @@ JMidiTriggerAudioProcessorEditor::~JMidiTriggerAudioProcessorEditor()
     //[/Destructor_pre]
 
     selectFileButton = nullptr;
-    label = nullptr;
+	refreshFileButton = nullptr;
+	filepathLabel = nullptr;
     tabbedComponent = nullptr;
 
 
@@ -111,8 +135,9 @@ void JMidiTriggerAudioProcessorEditor::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    selectFileButton->setBounds (getWidth() - 195, 5, 190, 45);
-    label->setBounds (5, 5, getWidth() - 200, 45);
+	selectFileButton->setBounds(getWidth() - 220, 5, 140, 45);
+	refreshFileButton->setBounds(getWidth() - 75, 5, 70, 45);
+	filepathLabel->setBounds(5, 5, getWidth() - 230, 45);
     tabbedComponent->setBounds (5, 55, getWidth() - 10, getHeight() - 70);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
@@ -123,18 +148,29 @@ void JMidiTriggerAudioProcessorEditor::buttonClicked (Button* buttonThatWasClick
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == selectFileButton)
-    {
-        //[UserButtonCode_selectFileButton] -- add your button handler code here..
-      showFileDialogue();
-        //[/UserButtonCode_selectFileButton]
-    }
+	if (buttonThatWasClicked == selectFileButton)
+	{
+		//[UserButtonCode_selectFileButton] -- add your button handler code here..
+		showFileDialogue();
+		//[/UserButtonCode_selectFileButton]
+	}
+	else if (buttonThatWasClicked == refreshFileButton)
+	{
+		//[UserButtonCode_selectFileButton] -- add your button handler code here..
+		processor.reloadFile();
+		//[/UserButtonCode_selectFileButton]
+	}
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
 }
 
-
+/*void JMidiTriggerAudioProcessorEditor::valueChanged(Value& value)
+{
+	if (value == processor.xmlFilePath) {
+		filepathLabel->setText(value.getValue().toString(), juce::NotificationType::sendNotification);
+	}
+}*/
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void JMidiTriggerAudioProcessorEditor::timerCallback()
@@ -182,7 +218,7 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="195R 5 190 45" bgColOff="ff819f3c"
               bgColOn="ff8cbc30" textCol="ffffffff" textColOn="ffffffff" buttonText="select MIDI file"
               connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="selectFileLabel" id="cca299c5275f99e5" memberName="label"
+  <LABEL name="filepathLabel" id="cca299c5275f99e5" memberName="filepathLabel"
          virtualName="" explicitFocusOrder="0" pos="5 5 200M 45" bkgCol="ff0c333c"
          textCol="ffffffff" edTextCol="ff000000" edBkgCol="0" labelText="select a MIDI instructions XML file to use"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"

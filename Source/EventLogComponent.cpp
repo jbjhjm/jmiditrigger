@@ -27,7 +27,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-EventLogComponent::EventLogComponent ()
+EventLogComponent::EventLogComponent(JMidiTriggerAudioProcessor& p)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -42,10 +42,12 @@ EventLogComponent::EventLogComponent ()
     EventlogTextarea->setColour (TextEditor::textColourId, Colours::white);
     EventlogTextarea->setColour (TextEditor::backgroundColourId, Colour (0x000c2131));
     EventlogTextarea->setColour (TextEditor::shadowColourId, Colour (0x00000000));
-    EventlogTextarea->setText (TRANS("bla bla"));
+    EventlogTextarea->setText (TRANS(""));
 
 
     //[UserPreSize]
+	statusLog.referTo(p.statusLog);
+	statusLog.addListener(this);
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -90,6 +92,13 @@ void EventLogComponent::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void EventLogComponent::valueChanged(Value& value)
+{
+	String Content = EventlogTextarea->getText();
+	Content.append( "\n" + value.getValue().toString(), 2000 );
+	EventlogTextarea->setText( Content, juce::NotificationType::dontSendNotification);
+	value = "";
+}
 //[/MiscUserCode]
 
 

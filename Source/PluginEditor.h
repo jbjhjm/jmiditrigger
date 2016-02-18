@@ -36,8 +36,9 @@
                                                                     //[/Comments]
 */
 class JMidiTriggerAudioProcessorEditor  : public AudioProcessorEditor,
-                                          public Timer,
-                                          public ButtonListener
+	public Timer,
+	//public ValueListener,
+	public ButtonListener
 {
 public:
     //==============================================================================
@@ -54,7 +55,7 @@ public:
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
-
+	//void valueChanged(Value &value) override;
 
 
 private:
@@ -64,9 +65,10 @@ private:
     //==============================================================================
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    JMidiTriggerAudioProcessor& processor;
-    ScopedPointer<TextButton> selectFileButton;
-    ScopedPointer<Label> label;
+	JMidiTriggerAudioProcessor& processor;
+	ScopedPointer<TextButton> selectFileButton;
+	ScopedPointer<TextButton> refreshFileButton;
+    ScopedPointer<Label> filepathLabel;
     ScopedPointer<TabbedComponent> tabbedComponent;
 
 

@@ -27,7 +27,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-AvailCmdsComponent::AvailCmdsComponent ()
+AvailCmdsComponent::AvailCmdsComponent(JMidiTriggerAudioProcessor& p)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -46,7 +46,10 @@ AvailCmdsComponent::AvailCmdsComponent ()
 
 
     //[UserPreSize]
-    //[/UserPreSize]
+	availCmdsTextarea->getTextValue().referTo(p.midiDataInfo);
+	//midiDataInfo.referTo(p.statusLog);
+	//midiDataInfo.addListener(this);
+	//[/UserPreSize]
 
     setSize (600, 400);
 
@@ -90,6 +93,10 @@ void AvailCmdsComponent::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void AvailCmdsComponent::valueChanged(Value& value)
+{
+	//EventlogTextarea->setText(EventlogTextarea->getText() + "\n" + value.getValue().toString(), juce::NotificationType::dontSendNotification);
+}
 //[/MiscUserCode]
 
 

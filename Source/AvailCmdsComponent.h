@@ -22,6 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
+#include "PluginProcessor.h"
 //[/Headers]
 
 
@@ -34,19 +35,21 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class AvailCmdsComponent  : public Component
+class AvailCmdsComponent : public Component, public ValueListener
 {
 public:
     //==============================================================================
-    AvailCmdsComponent ();
+	AvailCmdsComponent(JMidiTriggerAudioProcessor& p);
     ~AvailCmdsComponent();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    //[/UserMethods]
+	void valueChanged(Value &value) override;
+	//[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
+	Value midiDataInfo;
 
 
 

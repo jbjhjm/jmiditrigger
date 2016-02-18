@@ -15,6 +15,8 @@
 //==============================================================================
 JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
 {
+	pluginState = new XmlElement("pluginState");
+	pluginState->addChildElement(new XmlElement("xmlFilePath"));
 }
 
 JMidiTriggerAudioProcessor::~JMidiTriggerAudioProcessor()
@@ -130,47 +132,95 @@ void JMidiTriggerAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+	copyXmlToBinary(*pluginState, destData);
 }
 
 void JMidiTriggerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+	XmlElement* tmp = getXmlFromBinary(data, sizeInBytes);
+	if (tmp) {
+		pluginState = tmp;
+	}
 }
 
 //==============================================================================
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const File& fi)
 {
-    this->currentStatus += "\n " + fi.getFullPathName();
-    this->currentStatus += "\n xxx";
-    return true;
-    /*if (fi.exists())
-    {
-    this->currentStatus += "\n File found.";
-    this->xmlDoc = &XmlDocument(fi);
-    ScopedPointer<XmlElement> xmlRoot(this->xmlDoc->getDocumentElement());
+	log("Debug: Load XML File");
+	if (!fi.exists())
+	{
+		log("Error - file does not exist: " + fi.getFullPathName());
+		xmlFilePath = "";
+		return false;
+	}
+	else 
+	{
+		xmlFilePath = fi.getRelativePathFrom(File::getCurrentWorkingDirectory());
+		XmlElement* psXmlFilePath = pluginState->getChildByName("xmlFilePath");
+		psXmlFilePath->deleteAllTextElements();
+		psXmlFilePath->addTextElement(xmlFilePath.getValue().toString());
 
-    if (xmlRoot == nullptr)
-    {
-    this->currentStatus += "\n Parse error: " + this->xmlDoc->getLastParseError();
-    return false;
-    }
-    else
-    {
-    this->currentStatus += "\n Root Tag name = " + xmlRoot->getTagName();
-    return true;
-    }
-    }
-    else {
-    this->currentStatus += "\n Error: File not found.";
-    return false;
-    }*/
+		pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(xmlFilePath.toString().toRawUTF8());
+
+		if (xmlReadSuccess==false) {
+			log("Error while reading XML file: " + String(xmlReadSuccess.description()));
+			return xmlReadSuccess;
+		}
+		else {
+			log("Successfully parsed file: " + xmlFilePath.toString());
+			generateXmlDocumentation();
+			cacheXmlData();
+			return xmlReadSuccess;
+		}
+	}
 }
+
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const String& filePath)
 {
-    return this->loadXmlFile(File(filePath));
+	return this->loadXmlFile(File(filePath));
+}
+
+bool JMidiTriggerAudioProcessor::reloadFile()
+{
+	return this->loadXmlFile(File(xmlFilePath.toString()));
+}
+
+void JMidiTriggerAudioProcessor::generateXmlDocumentation()
+{
+	log("Debug: Generate documentation");
+	pugi::xml_node rootNode = xmlDoc.document_element();
+	log("Debug: Selected root node " + String( rootNode.name() ) );
+	pugi::xml_node listenersNode = rootNode.child("listeners");
+	log("Debug: Selected listeners group node " + String(listenersNode.name()));
+	String doc = "";
+	for (pugi::xml_node listenerNode = listenersNode.child("listener"); listenerNode; listenerNode = listenerNode.next_sibling("listener")) {
+		log("Debug: Found a listener node");
+		
+		doc +=
+			"Listener at Channel " + String(listenerNode.attribute("channel").as_string()) +
+			" " + String(listenerNode.attribute("type").as_string()) +
+			" [ " + String(listenerNode.attribute("key").as_string()) + " " + String(listenerNode.attribute("value").as_string()) + " ] " +
+			" \n";
+			
+	}
+	midiDataInfo = doc;
+	log("Successfully parsed file: " + xmlFilePath.toString());
+}
+
+void JMidiTriggerAudioProcessor::cacheXmlData()
+{
+
+}
+
+void JMidiTriggerAudioProcessor::log(String txt)
+{
+	String tmp = statusLog.getValue().toString();
+	tmp.append("\n" + txt, 2000);
+	statusLog = tmp;
 }
 
 //==============================================================================
