@@ -25,7 +25,7 @@
 #include "PluginProcessor.h"
 //[/Headers]
 
-
+class UpdateableComponent;
 
 //==============================================================================
 /**
@@ -60,6 +60,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+	Array<UpdateableComponent*> Components;
     //[/UserVariables]
 
     //==============================================================================

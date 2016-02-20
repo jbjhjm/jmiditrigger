@@ -27,7 +27,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-EventLogComponent::EventLogComponent(JMidiTriggerAudioProcessor& p)
+EventLogComponent::EventLogComponent(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e)
+	: UpdateableComponent(p, e)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -92,11 +93,14 @@ void EventLogComponent::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+// @TODO replace by timer. immediate updates may lead to errors when too much / too fast inpuit is generated
 void EventLogComponent::valueChanged(Value& value)
 {
 	String Content = EventlogTextarea->getText();
-	Content.append( "\n" + value.getValue().toString(), 2000 );
-	EventlogTextarea->setText( Content, juce::NotificationType::dontSendNotification);
+	Content.append( value.getValue().toString(), 2000 );
+	EventlogTextarea->setText( Content, juce::NotificationType::sendNotification);
+	EventlogTextarea->moveCaretToEnd();
+	EventlogTextarea->scrollDown();
 	value = "";
 }
 //[/MiscUserCode]

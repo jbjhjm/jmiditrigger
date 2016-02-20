@@ -66,9 +66,14 @@ JMidiTriggerAudioProcessorEditor::JMidiTriggerAudioProcessorEditor (JMidiTrigger
 
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtBottom));
     tabbedComponent->setTabBarDepth (30);
-    tabbedComponent->addTab (TRANS("Event Log"), Colour (0x5f197980), new EventLogComponent(p), true);
-    tabbedComponent->addTab (TRANS("Available Commands"), Colour (0x5f197980), new AvailCmdsComponent(p), true);
-    tabbedComponent->addTab (TRANS("MIDI XML Example"), Colour (0x5f197980), new XmlGuideComponent(), true);
+
+	Components.add(new EventLogComponent(p,*this));
+    tabbedComponent->addTab(TRANS("Event Log"), Colour (0x5f197980), Components[0], true);
+	Components.add(new AvailCmdsComponent(p, *this));
+	tabbedComponent->addTab(TRANS("Available Commands"), Colour(0x5f197980), Components[1], true);
+	Components.add(new XmlGuideComponent(p, *this));
+	tabbedComponent->addTab(TRANS("MIDI XML Example"), Colour(0x5f197980), Components[2], true);
+
     tabbedComponent->setCurrentTabIndex (0);
 
 
@@ -94,6 +99,7 @@ JMidiTriggerAudioProcessorEditor::JMidiTriggerAudioProcessorEditor (JMidiTrigger
 	*/
 	//p.xmlFilePath.addListener(this);
 	filepathLabel->getTextValue().referTo(p.xmlFilePath);
+	startTimer(200);
     //[/Constructor]
 }
 
@@ -175,8 +181,12 @@ void JMidiTriggerAudioProcessorEditor::buttonClicked (Button* buttonThatWasClick
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void JMidiTriggerAudioProcessorEditor::timerCallback()
 {
-     JMidiTriggerAudioProcessor* ourProcessor = getProcessor();
+     JMidiTriggerAudioProcessor* p = getProcessor();
      //exchange any data you want between UI elements and the Plugin "ourProcessor"
+	 for (int i = 0; i < Components.size(); i++) {
+		 Components[i]->updateContents(*p,*this);
+	 }
+
 }
 
 void JMidiTriggerAudioProcessorEditor::showFileDialogue()

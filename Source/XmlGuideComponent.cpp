@@ -27,7 +27,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-XmlGuideComponent::XmlGuideComponent ()
+XmlGuideComponent::XmlGuideComponent(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e)
+	: UpdateableComponent(p,e)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]

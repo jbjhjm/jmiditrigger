@@ -22,7 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
-#include "PluginProcessor.h"
+#include "UpdateableComponent.h"
 //[/Headers]
 
 
@@ -35,11 +35,11 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class AvailCmdsComponent : public Component, public ValueListener
+class AvailCmdsComponent : public UpdateableComponent, public ValueListener
 {
 public:
     //==============================================================================
-	AvailCmdsComponent(JMidiTriggerAudioProcessor& p);
+	AvailCmdsComponent(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e);
     ~AvailCmdsComponent();
 
     //==============================================================================

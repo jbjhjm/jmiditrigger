@@ -107,7 +107,7 @@ void JMidiTriggerAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBu
     for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-	MidiBuffer processedMidi;
+	MidiBuffer midiOutput;
 	int time;
 	MidiMessage m;
 	String searchString;
@@ -115,32 +115,10 @@ void JMidiTriggerAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBu
 	for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
 	{
 		addMidiMessageToList(m);
-		/*if (m.isNoteOn())
-		{
-			// newVel = (uint8)noteOnVel;
-			//m = MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
-			searchString = "";
-		}
-		else if (m.isNoteOff())
-		{
-		}
-		else if (m.isController())
-		{
-		}
-		else if (m.isProgramChange())
-		{
-		}
-
-		if (searchString != "") {
-
-			pugi::xpath_node* targetNode;
-			targetNode = xmlListenersNode->select_node(searchString);
-		}
-
-		processedMidi.addEvent(m, time);*/
+		processMidiInputMessage(m, midiOutput);
 	}
 
-	midiMessages.swapWith(processedMidi);
+	midiMessages.swapWith(midiOutput);
 }
 
 //==============================================================================
@@ -351,6 +329,85 @@ void JMidiTriggerAudioProcessor::addMidiMessageToList(const MidiMessage& message
 	const String midiMessageString(timecode + "  -  " + description + " (" + source + ")");
 
 	log(midiMessageString);
+}
+
+
+bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& message, MidiBuffer& midiOutput)
+{
+	//<listener channel = "2" type = "cc" key = "11" >
+	//m = MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
+
+	pugi::xpath_variable_set params;
+	bool foundAnyData = false;
+
+	params.add("channel", pugi::xpath_value_type::xpath_type_number);
+	params.add("type", pugi::xpath_value_type::xpath_type_string);
+	params.add("key", pugi::xpath_value_type::xpath_type_number);
+
+	params.set("channel", double(message.getChannel()));
+
+	if (message.isNoteOn())
+	{
+		params.set("type", "noteon");
+		params.set("key", double(message.getNoteNumber()));
+	}
+	else if (message.isNoteOff())
+	{
+		params.set("type", "noteoff");
+		params.set("key", double(message.getNoteNumber()));
+	}
+	else if (message.isController())
+	{
+		params.set("type", "cc");
+		params.set("key", double(message.getControllerNumber()));
+	}
+	else if (message.isProgramChange())
+	{
+		params.set("type", "pc");
+		params.set("key", double(message.getProgramChangeNumber()));
+	}
+
+	pugi::xpath_node targetNode = xmlListenersNode.select_node("listener[@channel='string($channel)'][@type='string($type)'][@key='string($key)']",&params);
+	if (targetNode) {
+		pugi::xml_node eventNode;
+		pugi::xml_node midiNode;
+		pugi::string_t outType;
+		int outChannel;
+		int outKey;
+		int sortIndex = 0;
+		Array<pugi::string_t> eventIds = getEventIdsForListener(&targetNode.node());
+		MidiMessage outMidiMsg;
+
+		//doc += "\tListener has " + String(eventIds.size()) + " triggers assigned. \n";
+		for (int i = 0; i < eventIds.size(); i++) {
+			eventNode = xmlEventsNode.find_child_by_attribute("event", "id", eventIds[i].c_str());
+			if (eventNode) {
+				midiNode = eventNode.child("midi");
+				for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
+					sortIndex++;
+					outChannel = midiNode.attribute("channel").as_int(1);
+					outType = midiNode.attribute("type").as_string("");
+					outKey = midiNode.attribute("key").as_int(0);
+					if (outType == "noteon") {
+						outMidiMsg = MidiMessage::noteOn(outChannel, outKey, float(1.0));
+					} else if (outType == "noteoff") {
+						outMidiMsg = MidiMessage::noteOff(outChannel, outKey, float(1.0));
+					} else if (outType == "cc") {
+						outMidiMsg = MidiMessage::controllerEvent(outChannel, outKey, float(1.0));
+					} else if (outType == "pc") {
+						outMidiMsg = MidiMessage::programChange(outChannel, outKey);
+					}
+					foundAnyData = true;
+					midiOutput.addEvent(outMidiMsg, sortIndex);
+				}
+			}
+			else 
+			{
+				//doc += "\tEvent Node '" + String(eventIds[i].c_str()) + "' not found. \n";
+			}
+		}
+	}
+	return foundAnyData;
 }
 
 

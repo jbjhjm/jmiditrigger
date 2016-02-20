@@ -36,7 +36,7 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-    void processBlock (AudioSampleBuffer&, MidiBuffer&) override;
+    void processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override;
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
@@ -78,6 +78,7 @@ public:
 	void log(const String& txt);
 	void logMidiMessage(const String& txt);
 	void addMidiMessageToList(const MidiMessage& message, const String& source="");
+	bool processMidiInputMessage(const MidiMessage& message, MidiBuffer& midiOutput);
 
 	Value xmlFilePath;
 	Value statusLog;

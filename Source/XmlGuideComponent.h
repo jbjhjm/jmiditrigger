@@ -22,6 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
+#include "UpdateableComponent.h"
 //[/Headers]
 
 
@@ -34,11 +35,11 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class XmlGuideComponent  : public Component
+class XmlGuideComponent : public UpdateableComponent
 {
 public:
     //==============================================================================
-    XmlGuideComponent ();
+	XmlGuideComponent(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e);
     ~XmlGuideComponent();
 
     //==============================================================================
