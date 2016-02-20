@@ -47,8 +47,8 @@ EventLogComponent::EventLogComponent(JMidiTriggerAudioProcessor& p, JMidiTrigger
 
 
     //[UserPreSize]
-	statusLog.referTo(p.statusLog);
-	statusLog.addListener(this);
+	//statusLog.referTo(p.statusLog);
+	//statusLog.addListener(this);
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -85,7 +85,7 @@ void EventLogComponent::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    EventlogTextarea->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    EventlogTextarea->setBounds (0, 0, getWidth() - 0, getHeight() - 10);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -96,13 +96,25 @@ void EventLogComponent::resized()
 // @TODO replace by timer. immediate updates may lead to errors when too much / too fast inpuit is generated
 void EventLogComponent::valueChanged(Value& value)
 {
-	String Content = EventlogTextarea->getText();
+	/*String Content = EventlogTextarea->getText();
 	Content.append( value.getValue().toString(), 2000 );
 	EventlogTextarea->setText( Content, juce::NotificationType::sendNotification);
 	EventlogTextarea->moveCaretToEnd();
 	EventlogTextarea->scrollDown();
-	value = "";
+	value = "";*/
 }
+
+void EventLogComponent::updateContents(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e)
+{
+	if (p.statusLog != "") {
+		String newContent = p.statusLog;
+		EventlogTextarea->moveCaretToEnd();
+		EventlogTextarea->insertTextAtCaret(newContent);
+		EventlogTextarea->scrollDown();
+	}
+	p.statusLog = "";
+}
+
 //[/MiscUserCode]
 
 

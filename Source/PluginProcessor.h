@@ -81,7 +81,7 @@ public:
 	bool processMidiInputMessage(const MidiMessage& message, MidiBuffer& midiOutput);
 
 	Value xmlFilePath;
-	Value statusLog;
+	String statusLog;
 	Value midiDataInfo;
 
 	pugi::xml_document xmlDoc;

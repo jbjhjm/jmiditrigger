@@ -434,17 +434,17 @@ Array<pugi::string_t> JMidiTriggerAudioProcessor::getEventIdsForListener(const p
 
 void JMidiTriggerAudioProcessor::logMidiMessage(const String& txt)
 {
-	String tmp = statusLog.getValue().toString();
-	tmp.append("\n" + txt, 2000);
-	statusLog = tmp;
+	//String tmp = statusLog.getValue().toString();
+	//tmp.append("\n" + txt, 2000);
+	statusLog += "\n" + txt;
 }
 
 void JMidiTriggerAudioProcessor::log(const String& txt)
 {
 	DBG(txt);
-	String tmp = statusLog.getValue().toString();
-	tmp.append("\n" + txt, 2000);
-	statusLog = tmp;
+	//String tmp = statusLog.getValue().toString();
+	//tmp.append("\n" + txt, 2000);
+	statusLog += "\n" + txt;
 }
 
 //==============================================================================
