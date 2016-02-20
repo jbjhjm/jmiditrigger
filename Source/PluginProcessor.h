@@ -60,22 +60,34 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+	void setStateValue(const String key, const String value);
+	String getStateValue(const String key, const String defaultValue);
 
     String currentStatus = "___";
 
-	XmlElement* pluginState;
+	XmlElement pluginState;
 
     bool loadXmlFile(const String& filePath);
     bool loadXmlFile(const File& fi);
+	void abortLoadXmlFile();
 	bool reloadFile();
 	void generateXmlDocumentation();
-	void cacheXmlData();
-	void log(String txt);
+	bool loadXmlData();
+	Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
+
+	void log(const String& txt);
+	void logMidiMessage(const String& txt);
+	void addMidiMessageToList(const MidiMessage& message, const String& source="");
 
 	Value xmlFilePath;
 	Value statusLog;
 	Value midiDataInfo;
+
 	pugi::xml_document xmlDoc;
+	pugi::xml_node xmlRootNode;
+	pugi::xml_node xmlEventsNode;
+	pugi::xml_node xmlListenersNode;
+	bool xmlReadyState = false;
 
 private:
     //==============================================================================

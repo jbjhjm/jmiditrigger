@@ -14,13 +14,15 @@
 
 //==============================================================================
 JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
+	: pluginState(XmlElement("pluginState"))
 {
-	pluginState = new XmlElement("pluginState");
-	pluginState->addChildElement(new XmlElement("xmlFilePath"));
+	//pluginState = XmlElement("pluginState");
+	//pluginState.addChildElement(new XmlElement("xmlFilePath"));
 }
 
 JMidiTriggerAudioProcessor::~JMidiTriggerAudioProcessor()
 {
+
 }
 
 //==============================================================================
@@ -105,14 +107,40 @@ void JMidiTriggerAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBu
     for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    for (int channel = 0; channel < getNumInputChannels(); ++channel)
-    {
-        float* channelData = buffer.getWritePointer (channel);
+	MidiBuffer processedMidi;
+	int time;
+	MidiMessage m;
+	String searchString;
 
-        // ..do something to the data...
-    }
+	for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
+	{
+		addMidiMessageToList(m);
+		/*if (m.isNoteOn())
+		{
+			// newVel = (uint8)noteOnVel;
+			//m = MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
+			searchString = "";
+		}
+		else if (m.isNoteOff())
+		{
+		}
+		else if (m.isController())
+		{
+		}
+		else if (m.isProgramChange())
+		{
+		}
+
+		if (searchString != "") {
+
+			pugi::xpath_node* targetNode;
+			targetNode = xmlListenersNode->select_node(searchString);
+		}
+
+		processedMidi.addEvent(m, time);*/
+	}
+
+	midiMessages.swapWith(processedMidi);
 }
 
 //==============================================================================
@@ -132,50 +160,85 @@ void JMidiTriggerAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-	copyXmlToBinary(*pluginState, destData);
+	copyXmlToBinary(pluginState, destData);
 }
 
-void JMidiTriggerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void JMidiTriggerAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+	// You should use this method to restore your parameters from this memory block,
+	// whose contents will have been created by the getStateInformation() call.
 	XmlElement* tmp = getXmlFromBinary(data, sizeInBytes);
 	if (tmp) {
-		pluginState = tmp;
+		pluginState = *tmp;
+		String tmpValue;
+
+		tmpValue = getStateValue("xmlFilePath","");
+		if (tmpValue != "") {
+			loadXmlFile(tmpValue);
+		}
 	}
+}
+
+void JMidiTriggerAudioProcessor::setStateValue(const String key, const String value)
+{
+	XmlElement* valNode = pluginState.getChildByName(key);
+
+	if (!valNode) {
+		valNode = new XmlElement(key);
+		pluginState.addChildElement(valNode);
+	}
+
+	valNode->setAttribute("value",value);
+}
+
+String JMidiTriggerAudioProcessor::getStateValue(const String key, const String defaultValue)
+{
+	XmlElement* valNode = pluginState.getChildByName(key);
+
+	if (!valNode) {
+		return defaultValue;
+	}
+
+	return valNode->getStringAttribute("value",defaultValue);
 }
 
 //==============================================================================
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const File& fi)
 {
-	log("Debug: Load XML File");
+	log("Loading XML File");
+	xmlReadyState = false;
 	if (!fi.exists())
 	{
 		log("Error - file does not exist: " + fi.getFullPathName());
 		xmlFilePath = "";
+		abortLoadXmlFile();
 		return false;
 	}
 	else 
 	{
 		xmlFilePath = fi.getRelativePathFrom(File::getCurrentWorkingDirectory());
-		XmlElement* psXmlFilePath = pluginState->getChildByName("xmlFilePath");
-		psXmlFilePath->deleteAllTextElements();
-		psXmlFilePath->addTextElement(xmlFilePath.getValue().toString());
+		setStateValue("xmlFilePath", xmlFilePath.getValue().toString());
 
 		pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(xmlFilePath.toString().toRawUTF8());
 
 		if (xmlReadSuccess==false) {
 			log("Error while reading XML file: " + String(xmlReadSuccess.description()));
-			return xmlReadSuccess;
-		}
-		else {
+			abortLoadXmlFile();
+			return false;
+		} else {
 			log("Successfully parsed file: " + xmlFilePath.toString());
+			if (!loadXmlData()) { abortLoadXmlFile(); return false; };
+			xmlReadyState = true;
 			generateXmlDocumentation();
-			cacheXmlData();
-			return xmlReadSuccess;
+			return true;
 		}
 	}
+}
+
+void JMidiTriggerAudioProcessor::abortLoadXmlFile()
+{
+	xmlReadyState = false;
 }
 
 
@@ -189,35 +252,139 @@ bool JMidiTriggerAudioProcessor::reloadFile()
 	return this->loadXmlFile(File(xmlFilePath.toString()));
 }
 
+bool JMidiTriggerAudioProcessor::loadXmlData()
+{
+	xmlRootNode = xmlDoc.document_element();
+	if (!xmlRootNode) { DBG("Error: No XML root node found. "); return false; }
+	DBG("Debug: Selected root node " + String(xmlRootNode.name()));
+
+	xmlEventsNode = xmlRootNode.child("events");
+	if (!xmlEventsNode) { DBG("Error: No XML <events> node found. "); return false; }
+	DBG("Debug: Selected events group node " + String(xmlEventsNode.name()));
+
+	xmlListenersNode = xmlRootNode.child("listeners");
+	if (!xmlListenersNode) { DBG("Error: No XML <listeners> node found. "); return false; }
+	DBG("Debug: Selected listeners group node " + String(xmlListenersNode.name()));
+
+	return true;
+}
+
 void JMidiTriggerAudioProcessor::generateXmlDocumentation()
 {
+	if (!xmlReadyState) return;
 	log("Debug: Generate documentation");
-	pugi::xml_node rootNode = xmlDoc.document_element();
-	log("Debug: Selected root node " + String( rootNode.name() ) );
-	pugi::xml_node listenersNode = rootNode.child("listeners");
-	log("Debug: Selected listeners group node " + String(listenersNode.name()));
+
 	String doc = "";
-	for (pugi::xml_node listenerNode = listenersNode.child("listener"); listenerNode; listenerNode = listenerNode.next_sibling("listener")) {
-		log("Debug: Found a listener node");
-		
+	//pugi::xml_node listenerNode = xmlListenersNode->child("listener");
+	pugi::xml_node eventNode;
+	Array<pugi::string_t> eventIds;
+	pugi::string_t eventName;
+
+	//DBG("Debug: Selected events group node " );
+
+	for (pugi::xml_node listenerNode = xmlListenersNode.child("listener"); listenerNode; listenerNode = listenerNode.next_sibling("listener")) {
+		DBG("Debug: Found a listener node");
 		doc +=
 			"Listener at Channel " + String(listenerNode.attribute("channel").as_string()) +
 			" " + String(listenerNode.attribute("type").as_string()) +
 			" [ " + String(listenerNode.attribute("key").as_string()) + " " + String(listenerNode.attribute("value").as_string()) + " ] " +
 			" \n";
-			
+
+		eventIds = getEventIdsForListener(&listenerNode);
+		if (eventIds.size() == 0) {
+			doc += "\tListener triggers nothing \n";
+		} else {
+			//doc += "\tListener has " + String(eventIds.size()) + " triggers assigned. \n";
+			for (int i=0; i < eventIds.size(); i++) {
+				eventNode = xmlEventsNode.find_child_by_attribute("event", "id", eventIds[i].c_str() );
+				if (eventNode) {
+					eventName = eventNode.attribute("name").as_string("");
+					if (eventName == "") eventName = eventIds[i].c_str();
+					doc += "\tEvent #" + String(i+1) + " - " + eventName + "\n";
+				}
+				else {
+					doc += "\tEvent Node '" + String(eventIds[i].c_str()) + "' not found. \n";
+				}
+			}
+		}
 	}
+
 	midiDataInfo = doc;
-	log("Successfully parsed file: " + xmlFilePath.toString());
+	DBG("Successfully parsed file.");
 }
 
-void JMidiTriggerAudioProcessor::cacheXmlData()
+static String getMidiMessageDescription(const MidiMessage& m)
 {
+	if (m.isNoteOn())           return "Note on " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3);
+	if (m.isNoteOff())          return "Note off " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3);
+	if (m.isProgramChange())    return "Program change " + String(m.getProgramChangeNumber());
+	if (m.isPitchWheel())       return "Pitch wheel " + String(m.getPitchWheelValue());
+	if (m.isAftertouch())       return "After touch " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3) + ": " + String(m.getAfterTouchValue());
+	if (m.isChannelPressure())  return "Channel pressure " + String(m.getChannelPressureValue());
+	if (m.isAllNotesOff())      return "All notes off";
+	if (m.isAllSoundOff())      return "All sound off";
+	if (m.isMetaEvent())        return "Meta event";
 
+	if (m.isController())
+	{
+		String name(MidiMessage::getControllerName(m.getControllerNumber()));
+
+		if (name.isEmpty())
+			name = "[" + String(m.getControllerNumber()) + "]";
+
+		return "Controller " + name + ": " + String(m.getControllerValue());
+	}
+	return String::toHexString(m.getRawData(), m.getRawDataSize());
 }
 
-void JMidiTriggerAudioProcessor::log(String txt)
+void JMidiTriggerAudioProcessor::addMidiMessageToList(const MidiMessage& message, const String& source)
 {
+	const double time = message.getTimeStamp();
+
+	const int hours = ((int)(time / 3600.0)) % 24;
+	const int minutes = ((int)(time / 60.0)) % 60;
+	const int seconds = ((int)time) % 60;
+	const int millis = ((int)(time * 1000.0)) % 1000;
+
+	const String timecode(String::formatted("%02d:%02d:%02d.%03d",hours,minutes,seconds,millis));
+	const String description(getMidiMessageDescription(message));
+	const String midiMessageString(timecode + "  -  " + description + " (" + source + ")");
+
+	log(midiMessageString);
+}
+
+
+Array<pugi::string_t> JMidiTriggerAudioProcessor::getEventIdsForListener(const pugi::xml_node* listenerNode)
+{
+	Array<pugi::string_t> EventIds;
+	pugi::string_t eventId;
+	pugi::xml_node triggerNode;
+
+	// trigger attribute shortcut
+	eventId = listenerNode->attribute("trigger").as_string("");
+	if (eventId != "") EventIds.add(eventId);
+
+	triggerNode = listenerNode->child("trigger");
+	//log("found a trigger node with tag " + String(triggerNode.name()) );
+	for (triggerNode; triggerNode; triggerNode = triggerNode.next_sibling("trigger")) {
+		eventId = triggerNode.attribute("id").as_string("");
+		//log("<trigger> with id "+eventId);
+		if (eventId != "") EventIds.add(eventId);
+	}
+
+	return EventIds;
+}
+
+void JMidiTriggerAudioProcessor::logMidiMessage(const String& txt)
+{
+	String tmp = statusLog.getValue().toString();
+	tmp.append("\n" + txt, 2000);
+	statusLog = tmp;
+}
+
+void JMidiTriggerAudioProcessor::log(const String& txt)
+{
+	DBG(txt);
 	String tmp = statusLog.getValue().toString();
 	tmp.append("\n" + txt, 2000);
 	statusLog = tmp;
