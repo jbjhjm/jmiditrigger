@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jmididata>
+  <events>
+    <event id="mypresetx" name="My Preset, Infotext">
+      <midi type="pc" channel="4" key="11" value="127" />
+      <midi type="noteon" channel="11" key="0" value="127" />
+    </event>
+  </events>
+  <listeners>
+    <listener channel="1" type="cc" key="11" >
+      <trigger id="mypresetx" />
+    </listener>
+    <listener channel="2" type="note" key="33" >
+      <trigger id="mypresetx" />
+    </listener>
+    <listener channel="3" type="pc" key="1" >
+      <trigger id="mypresetx" />
+    </listener>
+  </listeners>
+</jmididata>
