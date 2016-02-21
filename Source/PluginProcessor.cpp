@@ -224,12 +224,12 @@ bool JMidiTriggerAudioProcessor::loadXmlFile(const File& fi)
 	}
 	else 
 	{
-		xmlFilePath = fi.getRelativePathFrom(File::getCurrentWorkingDirectory());
-		debug("debug: xmlFilePath = " + xmlFilePath.getValue().toString());
+		xmlFilePath = fi.getRelativePathFrom(File::getSpecialLocation(File::SpecialLocationType::currentApplicationFile).getParentDirectory());
+		debug("debug: rel xmlFilePath = " + xmlFilePath.getValue().toString());
 		//setStateValue(Identifier("xmlFilePath"), xmlFilePath.getValue().toString());
 		//debug("after setstatevalue");
 
-		pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(xmlFilePath.toString().toRawUTF8());
+		pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(fi.getFullPathName().toRawUTF8());
 
 		if (xmlReadSuccess==false) {
 			log("Error while reading XML file: " + String(xmlReadSuccess.description()));
@@ -254,12 +254,13 @@ void JMidiTriggerAudioProcessor::abortLoadXmlFile()
 bool JMidiTriggerAudioProcessor::loadXmlFile(const String& filePath)
 {
 	// File(filePath) is only allowed for absolute paths!
-	return this->loadXmlFile( File::getCurrentWorkingDirectory().getChildFile(filePath) );
+	debug("load xml file from rel string:" + String(File::getSpecialLocation(File::SpecialLocationType::currentApplicationFile).getParentDirectory().getFullPathName()) + ", " + filePath);
+	return this->loadXmlFile(File::getSpecialLocation(File::SpecialLocationType::currentApplicationFile).getParentDirectory().getChildFile(filePath));
 }
 
 bool JMidiTriggerAudioProcessor::reloadFile()
 {
-	return this->loadXmlFile(File(xmlFilePath.toString()));
+	return this->loadXmlFile(xmlFilePath.toString());
 }
 
 bool JMidiTriggerAudioProcessor::loadXmlData()
