@@ -45,6 +45,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void valueChanged(Value &value) override;
+	void updateContents(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e) override;
 	//[/UserMethods]
 
     void paint (Graphics& g);

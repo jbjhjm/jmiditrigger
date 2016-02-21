@@ -37,7 +37,7 @@ AvailCmdsComponent::AvailCmdsComponent(JMidiTriggerAudioProcessor& p, JMidiTrigg
     availCmdsTextarea->setMultiLine (true);
     availCmdsTextarea->setReturnKeyStartsNewLine (true);
     availCmdsTextarea->setReadOnly (true);
-    availCmdsTextarea->setScrollbarsShown (false);
+	availCmdsTextarea->setScrollbarsShown(true);
     availCmdsTextarea->setCaretVisible (false);
     availCmdsTextarea->setPopupMenuEnabled (true);
     availCmdsTextarea->setColour (TextEditor::textColourId, Colours::white);
@@ -98,6 +98,12 @@ void AvailCmdsComponent::valueChanged(Value& value)
 {
 	//EventlogTextarea->setText(EventlogTextarea->getText() + "\n" + value.getValue().toString(), juce::NotificationType::dontSendNotification);
 }
+
+void AvailCmdsComponent::updateContents(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e)
+{
+	//availCmdsTextarea->getTextValue() = ;
+}
+
 //[/MiscUserCode]
 
 
