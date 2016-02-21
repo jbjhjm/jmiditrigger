@@ -329,26 +329,61 @@ void JMidiTriggerAudioProcessor::generateXmlDocumentation()
 
 static String getMidiMessageDescription(const MidiMessage& m)
 {
+
+	String type = "";
+	int channel = 0;
+	int key = 0;
+	int val = 0;
+
+	/*
 	if (m.isNoteOn())           return "Note on " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3);
 	if (m.isNoteOff())          return "Note off " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3);
 	if (m.isProgramChange())    return "Program change " + String(m.getProgramChangeNumber());
-	if (m.isPitchWheel())       return "Pitch wheel " + String(m.getPitchWheelValue());
-	if (m.isAftertouch())       return "After touch " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3) + ": " + String(m.getAfterTouchValue());
-	if (m.isChannelPressure())  return "Channel pressure " + String(m.getChannelPressureValue());
-	if (m.isAllNotesOff())      return "All notes off";
-	if (m.isAllSoundOff())      return "All sound off";
-	if (m.isMetaEvent())        return "Meta event";
-
+	//if (m.isPitchWheel())       return "Pitch wheel " + String(m.getPitchWheelValue());
+	//if (m.isAftertouch())       return "After touch " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3) + ": " + String(m.getAfterTouchValue());
+	//if (m.isChannelPressure())  return "Channel pressure " + String(m.getChannelPressureValue());
+	//if (m.isAllNotesOff())      return "All notes off";
+	//if (m.isAllSoundOff())      return "All sound off";
+	//if (m.isMetaEvent())        return "Meta event";
 	if (m.isController())
 	{
-		String name(MidiMessage::getControllerName(m.getControllerNumber()));
+	String name(MidiMessage::getControllerName(m.getControllerNumber()));
 
-		if (name.isEmpty())
-			name = "[" + String(m.getControllerNumber()) + "]";
+	if (name.isEmpty())
+	name = "[" + String(m.getControllerNumber()) + "]";
 
-		return "Controller " + name + ": " + String(m.getControllerValue());
+	return "Controller " + name + ": " + String(m.getControllerValue());
 	}
-	return String::toHexString(m.getRawData(), m.getRawDataSize());
+	*/
+
+	channel = m.getChannel();
+	if (m.isNoteOn())
+	{
+		type = "Note On ";
+		key = m.getNoteNumber();
+		val = m.getVelocity();
+	}
+	else if (m.isNoteOff())
+	{
+		type = "Note Off ";
+		key = m.getNoteNumber();
+		val = m.getVelocity();
+	}
+	else if (m.isController())
+	{
+		type = "CC      ";
+		key = m.getControllerNumber();
+		val = m.getControllerValue();
+	}
+	else if (m.isProgramChange())
+	{
+		type = "PC      ";
+		key = m.getProgramChangeNumber();
+		val = 1;
+	}
+
+	return type + " [Ch " + String(channel) + "] " + " (" + String(key) + ", " + String(val) + ") ";
+
 }
 
 void JMidiTriggerAudioProcessor::addMidiMessageToList(const MidiMessage& message, const String& source)
