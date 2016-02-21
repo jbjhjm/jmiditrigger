@@ -1,2 +1,14 @@
-/Builds
 /JuceLibraryCode
+*.zip
+*.exe
+*.dll
+*.sdf
+*.obj
+*.lib
+*.pdb
+*.log
+*.tlog
+*.idb
+*.res
+*.rc
+*.exp
