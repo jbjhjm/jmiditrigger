@@ -58,14 +58,12 @@ public:
     void changeProgramName (int index, const String& newName) override;
 
     //==============================================================================
-    void getStateInformation (MemoryBlock& destData) override;
+	//XmlElement* pluginState;
+	void getStateInformation(MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-	void setStateValue(const String key, const String value);
-	String getStateValue(const String key, const String defaultValue);
-
-    String currentStatus = "___";
-
-	XmlElement pluginState;
+	void setStateValue( Identifier& key, const String& value);
+	String getStateValue( Identifier& key, const String& defaultValue);
+   // String currentStatus = "___";
 
     bool loadXmlFile(const String& filePath);
     bool loadXmlFile(const File& fi);
@@ -76,6 +74,7 @@ public:
 	Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
 
 	void log(const String& txt);
+	void debug(const String& txt);
 	void logMidiMessage(const String& txt);
 	void addMidiMessageToList(const MidiMessage& message, const String& source="");
 	bool processMidiInputMessage(const MidiMessage& message, MidiBuffer& midiOutput);

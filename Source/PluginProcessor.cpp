@@ -14,7 +14,6 @@
 
 //==============================================================================
 JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
-	: pluginState(XmlElement("pluginState"))
 {
 	//pluginState = XmlElement("pluginState");
 	//pluginState.addChildElement(new XmlElement("xmlFilePath"));
@@ -22,7 +21,7 @@ JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
 
 JMidiTriggerAudioProcessor::~JMidiTriggerAudioProcessor()
 {
-
+	//delete pluginState;
 }
 
 //==============================================================================
@@ -135,56 +134,86 @@ AudioProcessorEditor* JMidiTriggerAudioProcessor::createEditor()
 //==============================================================================
 void JMidiTriggerAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+	// create an outer XML element..
+	XmlElement pluginState("pluginState");
+
+	// add some attributes to it..
+	pluginState.setAttribute("xmlFilePath", xmlFilePath.getValue().toString());
 	copyXmlToBinary(pluginState, destData);
 }
 
 void JMidiTriggerAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-	// You should use this method to restore your parameters from this memory block,
-	// whose contents will have been created by the getStateInformation() call.
-	XmlElement* tmp = getXmlFromBinary(data, sizeInBytes);
-	if (tmp) {
-		pluginState = *tmp;
+	XmlElement* const pluginState = getXmlFromBinary(data, sizeInBytes);
+	if (pluginState) {
+		//delete pluginState;
+		//pluginState = xmlState;
 		String tmpValue;
 
-		tmpValue = getStateValue("xmlFilePath","");
+		tmpValue = pluginState->getStringAttribute("xmlFilePath", "");
 		if (tmpValue != "") {
+			debug("restore state, load Xml File by Path: "+tmpValue);
 			loadXmlFile(tmpValue);
 		}
+
+		delete pluginState;
 	}
+
+	/*
+	example code:
+
+	XmlElement* const xmlState = getXmlFromBinary (data, sizeInBytes);
+
+	if (xmlState != 0)
+		{
+		// check that it's the right type of xml..
+		if (xmlState->hasTagName (T("MYPLUGINSETTINGS")))
+		{
+			// ok, now pull out our parameters..
+			gain = (float) xmlState->getDoubleAttribute (T("gainLevel"), gain);
+
+			lastUIWidth = xmlState->getIntAttribute (T("uiWidth"), lastUIWidth);
+			lastUIHeight = xmlState->getIntAttribute (T("uiHeight"), lastUIHeight);
+
+			sendChangeMessage (this);
+		}
+
+		delete xmlState;
+	}
+	*/
 }
 
-void JMidiTriggerAudioProcessor::setStateValue(const String key, const String value)
+void JMidiTriggerAudioProcessor::setStateValue( Identifier& key, const String& value)
 {
-	XmlElement* valNode = pluginState.getChildByName(key);
+	/*XmlElement* valNode = pluginState->getChildByName(key);
 
 	if (!valNode) {
 		valNode = new XmlElement(key);
-		pluginState.addChildElement(valNode);
+		pluginState->addChildElement(valNode);
 	}
 
 	valNode->setAttribute("value",value);
+	delete valNode;*/
+	//if (pluginState) pluginState->setAttribute(key, value);
 }
 
-String JMidiTriggerAudioProcessor::getStateValue(const String key, const String defaultValue)
+String JMidiTriggerAudioProcessor::getStateValue( Identifier& key, const String& defaultValue)
 {
-	XmlElement* valNode = pluginState.getChildByName(key);
-
-	if (!valNode) {
-		return defaultValue;
-	}
-
-	return valNode->getStringAttribute("value",defaultValue);
+	/*XmlElement* valNode = pluginState->getChildByName(key);
+	if (!valNode) return defaultValue;
+	String result = valNode->getStringAttribute("value", defaultValue);
+	delete valNode;
+	return result;*/
+	//if (pluginState) return pluginState->getStringAttribute(key, defaultValue);
+	//else return defaultValue;
+	return defaultValue;
 }
 
 //==============================================================================
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const File& fi)
 {
-	log("Loading XML File");
+	log("Loading XML File " + fi.getFullPathName());
 	xmlReadyState = false;
 	if (!fi.exists())
 	{
@@ -196,7 +225,9 @@ bool JMidiTriggerAudioProcessor::loadXmlFile(const File& fi)
 	else 
 	{
 		xmlFilePath = fi.getRelativePathFrom(File::getCurrentWorkingDirectory());
-		setStateValue("xmlFilePath", xmlFilePath.getValue().toString());
+		debug("debug: xmlFilePath = " + xmlFilePath.getValue().toString());
+		//setStateValue(Identifier("xmlFilePath"), xmlFilePath.getValue().toString());
+		//debug("after setstatevalue");
 
 		pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(xmlFilePath.toString().toRawUTF8());
 
@@ -222,7 +253,8 @@ void JMidiTriggerAudioProcessor::abortLoadXmlFile()
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const String& filePath)
 {
-	return this->loadXmlFile(File(filePath));
+	// File(filePath) is only allowed for absolute paths!
+	return this->loadXmlFile( File::getCurrentWorkingDirectory().getChildFile(filePath) );
 }
 
 bool JMidiTriggerAudioProcessor::reloadFile()
@@ -445,9 +477,15 @@ void JMidiTriggerAudioProcessor::logMidiMessage(const String& txt)
 void JMidiTriggerAudioProcessor::log(const String& txt)
 {
 	DBG(txt);
-	//String tmp = statusLog.getValue().toString();
-	//tmp.append("\n" + txt, 2000);
 	statusLog += "\n" + txt;
+}
+
+void JMidiTriggerAudioProcessor::debug(const String& txt)
+{
+#ifdef _DEBUG
+	DBG(txt);
+	statusLog += "\n" + txt;
+#endif
 }
 
 //==============================================================================
