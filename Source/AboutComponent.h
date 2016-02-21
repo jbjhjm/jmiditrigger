@@ -17,15 +17,15 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_B633E1298AD05EAC__
-#define __JUCE_HEADER_B633E1298AD05EAC__
+#ifndef __JUCE_HEADER_8957D8CE3292A454X__
+#define __JUCE_HEADER_8957D8CE3292A454X__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
-#include "PluginProcessor.h"
+#include "UpdateableComponent.h"
 //[/Headers]
 
-class UpdateableComponent;
+
 
 //==============================================================================
 /**
@@ -35,50 +35,35 @@ class UpdateableComponent;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class JMidiTriggerAudioProcessorEditor  : public AudioProcessorEditor,
-	public Timer,
-	//public ValueListener,
-	public ButtonListener
+class AboutComponent : public UpdateableComponent
 {
 public:
     //==============================================================================
-    JMidiTriggerAudioProcessorEditor (JMidiTriggerAudioProcessor& p);
-    ~JMidiTriggerAudioProcessorEditor();
+	AboutComponent(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e);
+	~AboutComponent();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void timerCallback();
-    JMidiTriggerAudioProcessor* getProcessor() const {return static_cast <JMidiTriggerAudioProcessor*>(getAudioProcessor());}
-    void showFileDialogue();
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
-	//void valueChanged(Value &value) override;
+
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	Array<UpdateableComponent*> Components;
     //[/UserVariables]
 
     //==============================================================================
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-	JMidiTriggerAudioProcessor& processor;
-	ScopedPointer<TextButton> selectFileButton;
-	ScopedPointer<TextButton> refreshFileButton;
-    ScopedPointer<Label> filepathLabel;
-    ScopedPointer<TabbedComponent> tabbedComponent;
-	Image cachedImage_background_png_1;
+    ScopedPointer<TextEditor> AboutTextarea;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JMidiTriggerAudioProcessorEditor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AboutComponent)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_B633E1298AD05EAC__
+#endif   // __JUCE_HEADER_8957D8CE3292A454X__

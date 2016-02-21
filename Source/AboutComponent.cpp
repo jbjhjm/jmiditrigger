@@ -20,36 +20,34 @@
 //[Headers] You can add your own extra header files here...
 //[/Headers]
 
-#include "EventLogComponent.h"
+#include "AboutComponent.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
 
 //==============================================================================
-EventLogComponent::EventLogComponent(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e)
-	: UpdateableComponent(p, e)
+AboutComponent::AboutComponent(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e)
+	: UpdateableComponent(p,e)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (EventlogTextarea = new TextEditor ("EventlogTextarea"));
-    EventlogTextarea->setMultiLine (true);
-    EventlogTextarea->setReturnKeyStartsNewLine (true);
-    EventlogTextarea->setReadOnly (true);
-    EventlogTextarea->setScrollbarsShown (true);
-    EventlogTextarea->setCaretVisible (false);
-    EventlogTextarea->setPopupMenuEnabled (false);
-    EventlogTextarea->setColour (TextEditor::textColourId, Colours::white);
-	EventlogTextarea->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
-    EventlogTextarea->setColour (TextEditor::shadowColourId, Colour (0x00000000));
-    EventlogTextarea->setText (TRANS(""));
+    addAndMakeVisible (AboutTextarea = new TextEditor ("XmlGuideTextarea"));
+	AboutTextarea->setMultiLine(true);
+	AboutTextarea->setReturnKeyStartsNewLine(true);
+	AboutTextarea->setReadOnly(true);
+	AboutTextarea->setScrollbarsShown(true);
+	AboutTextarea->setCaretVisible(false);
+	AboutTextarea->setPopupMenuEnabled(true);
+	AboutTextarea->setColour(TextEditor::textColourId, Colours::white);
+	AboutTextarea->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+	AboutTextarea->setColour(TextEditor::shadowColourId, Colour(0x00000000));
 
 
     //[UserPreSize]
-	//statusLog.referTo(p.statusLog);
-	//statusLog.addListener(this);
-    //[/UserPreSize]
+	AboutTextarea->setText(TRANS("Custom Plugin Developed by Jannik Mewes, 2016"));
+   //[/UserPreSize]
 
     setSize (600, 400);
 
@@ -58,12 +56,12 @@ EventLogComponent::EventLogComponent(JMidiTriggerAudioProcessor& p, JMidiTrigger
     //[/Constructor]
 }
 
-EventLogComponent::~EventLogComponent()
+AboutComponent::~AboutComponent()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    EventlogTextarea = nullptr;
+	AboutTextarea = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -71,7 +69,7 @@ EventLogComponent::~EventLogComponent()
 }
 
 //==============================================================================
-void EventLogComponent::paint (Graphics& g)
+void AboutComponent::paint(Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
@@ -80,12 +78,12 @@ void EventLogComponent::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void EventLogComponent::resized()
+void AboutComponent::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    EventlogTextarea->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+	AboutTextarea->setBounds(0, 0, getWidth() - 0, getHeight() - 0);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -93,28 +91,6 @@ void EventLogComponent::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-// @TODO replace by timer. immediate updates may lead to errors when too much / too fast inpuit is generated
-void EventLogComponent::valueChanged(Value& value)
-{
-	/*String Content = EventlogTextarea->getText();
-	Content.append( value.getValue().toString(), 2000 );
-	EventlogTextarea->setText( Content, juce::NotificationType::sendNotification);
-	EventlogTextarea->moveCaretToEnd();
-	EventlogTextarea->scrollDown();
-	value = "";*/
-}
-
-void EventLogComponent::updateContents(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e)
-{
-	if (p.statusLog != "") {
-		String newContent = p.statusLog;
-		EventlogTextarea->moveCaretToEnd();
-		EventlogTextarea->insertTextAtCaret(newContent);
-		EventlogTextarea->scrollDown();
-	}
-	p.statusLog = "";
-}
-
 //[/MiscUserCode]
 
 
@@ -127,15 +103,15 @@ void EventLogComponent::updateContents(JMidiTriggerAudioProcessor& p, JMidiTrigg
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="EventLogComponent" componentName=""
+<JUCER_COMPONENT documentType="Component" className="XmlGuideComponent" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="600" initialHeight="400">
-  <BACKGROUND backgroundColour="42571c"/>
-  <TEXTEDITOR name="EventlogTextarea" id="9164189f3c8afac2" memberName="EventlogTextarea"
+  <BACKGROUND backgroundColour="ffffff"/>
+  <TEXTEDITOR name="XmlGuideTextarea" id="9164189f3c8afac2" memberName="XmlGuideTextarea"
               virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" textcol="ffffffff"
-              bkgcol="c2131" shadowcol="0" initialText="bla bla" multiline="1"
-              retKeyStartsLine="1" readonly="1" scrollbars="1" caret="0" popupmenu="0"/>
+              bkgcol="d2639" shadowcol="0" initialText="bla bla" multiline="1"
+              retKeyStartsLine="1" readonly="1" scrollbars="1" caret="0" popupmenu="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

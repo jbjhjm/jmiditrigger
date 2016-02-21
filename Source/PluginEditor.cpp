@@ -24,6 +24,8 @@
 #include "EventLogComponent.h"
 #include "AvailCmdsComponent.h"
 #include "XmlGuideComponent.h"
+#include "AboutComponent.h"
+#include "resources.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
@@ -54,12 +56,11 @@ JMidiTriggerAudioProcessorEditor::JMidiTriggerAudioProcessorEditor (JMidiTrigger
 	refreshFileButton->setColour(TextButton::textColourOnId, Colours::white);
 	refreshFileButton->setColour(TextButton::textColourOffId, Colours::white);
 
-	addAndMakeVisible(filepathLabel = new Label("filepathLabel",
-                                          TRANS("select a MIDI instructions XML file to use")));
+	addAndMakeVisible(filepathLabel = new Label("filepathLabel", TRANS("select a MIDI instructions XML file to use")));
 	filepathLabel->setFont(Font(15.00f, Font::plain));
 	filepathLabel->setJustificationType(Justification::centredLeft);
 	filepathLabel->setEditable(false, false, false);
-	filepathLabel->setColour(Label::backgroundColourId, Colour(0xff0c333c));
+	filepathLabel->setColour(Label::backgroundColourId, Colour(0x00000000));
 	filepathLabel->setColour(Label::textColourId, Colours::white);
 	filepathLabel->setColour(TextEditor::textColourId, Colours::black);
 	filepathLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
@@ -68,13 +69,17 @@ JMidiTriggerAudioProcessorEditor::JMidiTriggerAudioProcessorEditor (JMidiTrigger
     tabbedComponent->setTabBarDepth (30);
 
 	Components.add(new EventLogComponent(p,*this));
-    tabbedComponent->addTab(TRANS("Event Log"), Colour (0x5f197980), Components[0], true);
+	tabbedComponent->addTab(TRANS("Event Log"), Colour(0xbb051015), Components[0], true);
 	Components.add(new AvailCmdsComponent(p, *this));
-	tabbedComponent->addTab(TRANS("Available Commands"), Colour(0x5f197980), Components[1], true);
+	tabbedComponent->addTab(TRANS("Available Commands"), Colour(0xbb051015), Components[1], true);
 	Components.add(new XmlGuideComponent(p, *this));
-	tabbedComponent->addTab(TRANS("MIDI XML Example"), Colour(0x5f197980), Components[2], true);
+	tabbedComponent->addTab(TRANS("MIDI XML Example"), Colour(0xbb051015), Components[2], true);
+	Components.add(new AboutComponent(p, *this));
+	tabbedComponent->addTab(TRANS("About"), Colour(0xbb051015), Components[3], true);
 
     tabbedComponent->setCurrentTabIndex (0);
+
+	cachedImage_background_png_1 = ImageCache::getFromMemory(resource_TestComponent_background_png, resource_TestComponent_background_png_size);
 
 
     //[UserPreSize]
@@ -126,11 +131,15 @@ void JMidiTriggerAudioProcessorEditor::paint (Graphics& g)
 
     g.fillAll (Colours::black);
 
-    g.setColour (Colour (0x70b0d879));
-    g.setFont (Font ("Impact", 125.00f, Font::plain));
-    g.drawText (TRANS("SECTOR"),
-                0, 55, getWidth() - 0, getHeight() - 75,
-                Justification::centred, true);
+    //g.setColour (Colour (0x70b0d879));
+    //g.setFont (Font ("Impact", 125.00f, Font::plain));
+   // g.drawText (TRANS("SECTOR"),
+   //             0, 55, getWidth() - 0, getHeight() - 75,
+   //             Justification::centred, true);
+	g.setOpacity(1.0f);
+	g.drawImage(cachedImage_background_png_1,
+		0, 0, getWidth(), getHeight(),
+		0, 0, cachedImage_background_png_1.getWidth(), cachedImage_background_png_1.getHeight());
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -141,10 +150,10 @@ void JMidiTriggerAudioProcessorEditor::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-	selectFileButton->setBounds(getWidth() - 220, 5, 140, 45);
-	refreshFileButton->setBounds(getWidth() - 75, 5, 70, 45);
-	filepathLabel->setBounds(5, 5, getWidth() - 230, 45);
-    tabbedComponent->setBounds (5, 55, getWidth() - 10, getHeight() - 70);
+	selectFileButton->setBounds(getWidth() * 0.55, 10, getWidth()*0.25, 34);
+	refreshFileButton->setBounds(getWidth() * 0.8 + 5, 10, getWidth()*0.2 - 10, 34);
+	filepathLabel->setBounds(5, 46, getWidth() - 10, 34);
+    tabbedComponent->setBounds (5, 85, getWidth() - 10, getHeight() - 100);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
