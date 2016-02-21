@@ -451,7 +451,7 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 	pugi::xpath_node targetNode = midiListenerQuery.evaluate_node(xmlListenersNode);
 	if (targetNode) {
 
-		if (type == "all" && targetNode.node().attribute("type").as_string() == "noteoff") {
+		if (type == "noteoff" && targetNode.node().attribute("type").as_string() == "all") {
 			// ignore noteoff midi input for type "all" listeners
 			return false;
 		}
