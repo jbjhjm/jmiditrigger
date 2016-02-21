@@ -35,7 +35,7 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class EventLogComponent : public UpdateableComponent, public ValueListener
+class EventLogComponent : public UpdateableComponent, public ValueListener, public ButtonListener
 {
 public:
     //==============================================================================
@@ -45,6 +45,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void valueChanged(Value &value) override;
+	void buttonClicked(Button* buttonThatWasClicked);
 	void updateContents(JMidiTriggerAudioProcessor& p, JMidiTriggerAudioProcessorEditor& e) override;
 	//[/UserMethods]
 
@@ -59,6 +60,7 @@ private:
 
     //==============================================================================
     ScopedPointer<TextEditor> EventlogTextarea;
+	ScopedPointer<TextButton> ClearLogButton;
 
 
     //==============================================================================

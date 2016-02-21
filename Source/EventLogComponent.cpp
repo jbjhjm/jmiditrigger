@@ -45,6 +45,14 @@ EventLogComponent::EventLogComponent(JMidiTriggerAudioProcessor& p, JMidiTrigger
     EventlogTextarea->setColour (TextEditor::shadowColourId, Colour (0x00000000));
     EventlogTextarea->setText (TRANS(""));
 
+	addAndMakeVisible(ClearLogButton = new TextButton("clearLogButton"));
+	ClearLogButton->setButtonText(TRANS("clear log"));
+	ClearLogButton->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+	ClearLogButton->addListener(this);
+	ClearLogButton->setColour(TextButton::buttonColourId, Colour(0x30819f3c));
+	ClearLogButton->setColour(TextButton::buttonOnColourId, Colour(0x308cbc30));
+	ClearLogButton->setColour(TextButton::textColourOnId, Colours::white);
+	ClearLogButton->setColour(TextButton::textColourOffId, Colours::white);
 
     //[UserPreSize]
 	//statusLog.referTo(p.statusLog);
@@ -64,6 +72,7 @@ EventLogComponent::~EventLogComponent()
     //[/Destructor_pre]
 
     EventlogTextarea = nullptr;
+	ClearLogButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -86,10 +95,18 @@ void EventLogComponent::resized()
     //[/UserPreResize]
 
     EventlogTextarea->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
-    //[UserResized] Add your own custom resize handling here..
+	ClearLogButton->setBounds(getWidth() -75, getHeight()-35, 70, 30);
+	//[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
 
+void EventLogComponent::buttonClicked(Button* buttonThatWasClicked)
+{
+	if (buttonThatWasClicked == ClearLogButton)
+	{
+		EventlogTextarea->clear();
+	}
+}
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
