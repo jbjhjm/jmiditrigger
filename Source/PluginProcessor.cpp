@@ -372,6 +372,9 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 {
 	//<listener channel = "2" type = "cc" key = "11" >
 	//m = MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
+	String type = "";
+	int channel = 0;
+	int key = 0;
 
 	pugi::xpath_variable_set params;
 	bool foundAnyData = false;
@@ -380,31 +383,46 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 	params.add("type", pugi::xpath_value_type::xpath_type_string);
 	params.add("key", pugi::xpath_value_type::xpath_type_number);
 
-	params.set("channel", double(message.getChannel()));
+	channel = message.getChannel();
 
 	if (message.isNoteOn())
 	{
-		params.set("type", "noteon");
-		params.set("key", double(message.getNoteNumber()));
+		type = "noteon";
+		key = message.getNoteNumber();
 	}
 	else if (message.isNoteOff())
 	{
-		params.set("type", "noteoff");
-		params.set("key", double(message.getNoteNumber()));
+		type = "noteoff";
+		key = message.getNoteNumber();
 	}
 	else if (message.isController())
 	{
-		params.set("type", "cc");
-		params.set("key", double(message.getControllerNumber()));
+		type = "cc";
+		key = message.getControllerNumber();
 	}
 	else if (message.isProgramChange())
 	{
-		params.set("type", "pc");
-		params.set("key", double(message.getProgramChangeNumber()));
+		type = "pc";
+		key = message.getProgramChangeNumber();
 	}
 
-	pugi::xpath_node targetNode = xmlListenersNode.select_node("listener[@channel='string($channel)'][@type='string($type)' or @type='all'][@key='string($key)']",&params);
+	params.set("channel", double(channel));
+	params.set("type", type.getCharPointer());
+	params.set("key", double(key));
+
+	debug("search listener for type=" + String(type) + " channel=" + String(channel) + " key=" + String(key));
+
+	// [@type=string(type) or @type=all]
+	pugi::xpath_query midiListenerQuery("listener[@channel=number($channel)][@key=number($key)][@type=string($type) or @type='all']", &params);
+	pugi::xpath_node targetNode = midiListenerQuery.evaluate_node(xmlListenersNode);
 	if (targetNode) {
+
+		if (type == "all" && targetNode.node().attribute("type").as_string() == "noteoff") {
+			// ignore noteoff midi input for type "all" listeners
+			return false;
+		}
+
+		debug("midi event found: " + String(targetNode.node().name()));
 		pugi::xml_node eventNode;
 		pugi::xml_node midiNode;
 		pugi::string_t outType;
@@ -442,6 +460,10 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 				//doc += "\tEvent Node '" + String(eventIds[i].c_str()) + "' not found. \n";
 			}
 		}
+	}
+	else 
+	{
+		debug("midi event has no listener assigned.");
 	}
 	return foundAnyData;
 }
