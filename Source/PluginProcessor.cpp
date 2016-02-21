@@ -419,7 +419,6 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 	params.add("key", pugi::xpath_value_type::xpath_type_number);
 
 	channel = message.getChannel();
-
 	if (message.isNoteOn())
 	{
 		type = "noteon";
@@ -463,13 +462,15 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 		pugi::string_t outType;
 		int outChannel;
 		int outKey;
+		int outVal;
 		int sortIndex = 0;
 		Array<pugi::string_t> eventIds = getEventIdsForListener(&targetNode.node());
 		MidiMessage outMidiMsg;
 
-		//doc += "\tListener has " + String(eventIds.size()) + " triggers assigned. \n";
+		//debug("Listener has " + String(eventIds.size()) + " triggers assigned.");
 		for (int i = 0; i < eventIds.size(); i++) {
 			eventNode = xmlEventsNode.find_child_by_attribute("event", "id", eventIds[i].c_str());
+			debug("Listener trigger #" + String(i + 1) + ": " + String(eventIds[i].c_str()) + " node found: " + String(eventNode.name()));
 			if (eventNode) {
 				midiNode = eventNode.child("midi");
 				for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
@@ -477,12 +478,14 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 					outChannel = midiNode.attribute("channel").as_int(1);
 					outType = midiNode.attribute("type").as_string("");
 					outKey = midiNode.attribute("key").as_int(0);
+					outVal = midiNode.attribute("value").as_int(0);
+					debug("Send midi " + String(outType) + " @Ch " + String(outChannel) + " " + String(outKey)+","+String(outVal));
 					if (outType == "noteon") {
-						outMidiMsg = MidiMessage::noteOn(outChannel, outKey, float(1.0));
+						outMidiMsg = MidiMessage::noteOn(outChannel, outKey, float(outVal));
 					} else if (outType == "noteoff") {
-						outMidiMsg = MidiMessage::noteOff(outChannel, outKey, float(1.0));
+						outMidiMsg = MidiMessage::noteOff(outChannel, outKey, float(outVal));
 					} else if (outType == "cc") {
-						outMidiMsg = MidiMessage::controllerEvent(outChannel, outKey, float(1.0));
+						outMidiMsg = MidiMessage::controllerEvent(outChannel, outKey, outVal);
 					} else if (outType == "pc") {
 						outMidiMsg = MidiMessage::programChange(outChannel, outKey);
 					}
