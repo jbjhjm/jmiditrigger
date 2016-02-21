@@ -266,13 +266,16 @@ void JMidiTriggerAudioProcessor::generateXmlDocumentation()
 			"Listener at Channel " + String(listenerNode.attribute("channel").as_string()) +
 			" " + String(listenerNode.attribute("type").as_string()) +
 			" [ " + String(listenerNode.attribute("key").as_string()) + " " + String(listenerNode.attribute("value").as_string()) + " ] " +
-			" \n";
+			" ";
 
 		eventIds = getEventIdsForListener(&listenerNode);
 		if (eventIds.size() == 0) {
-			doc += "\tListener triggers nothing \n";
+			doc += "\t Listener triggers nothing \n";
 		} else {
 			//doc += "\tListener has " + String(eventIds.size()) + " triggers assigned. \n";
+			if (eventIds.size() > 1) {
+				doc += "\n";
+			}
 			for (int i=0; i < eventIds.size(); i++) {
 				eventNode = xmlEventsNode.find_child_by_attribute("event", "id", eventIds[i].c_str() );
 				if (eventNode) {
@@ -367,7 +370,7 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const MidiMessage& mess
 		params.set("key", double(message.getProgramChangeNumber()));
 	}
 
-	pugi::xpath_node targetNode = xmlListenersNode.select_node("listener[@channel='string($channel)'][@type='string($type)'][@key='string($key)']",&params);
+	pugi::xpath_node targetNode = xmlListenersNode.select_node("listener[@channel='string($channel)'][@type='string($type)' or @type='all'][@key='string($key)']",&params);
 	if (targetNode) {
 		pugi::xml_node eventNode;
 		pugi::xml_node midiNode;
