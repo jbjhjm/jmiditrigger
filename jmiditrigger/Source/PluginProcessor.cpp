@@ -22,6 +22,7 @@ JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
                        )
 #endif
 {
+	logger = StatusLog::getInstance();
 }
 
 JMidiTriggerAudioProcessor::~JMidiTriggerAudioProcessor()
@@ -364,7 +365,7 @@ void JMidiTriggerAudioProcessor::addMidiMessageToList(const juce::MidiMessage& m
 	const juce::String description(getMidiMessageDescription(message));
 	const juce::String midiMessageString(timecode + "  -  " + description + " (" + source + ")");
 
-	log(midiMessageString);
+	logger.log(midiMessageString);
 }
 
 
@@ -475,26 +476,6 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const juce::MidiMessage
 	// return foundAnyData;
 }
 
-void JMidiTriggerAudioProcessor::logMidiMessage(const juce::String& txt)
-{
-	//String tmp = statusLog.getValue().toString();
-	//tmp.append("\n" + txt, 2000);
-	statusLog += "\n" + txt;
-}
-
-void JMidiTriggerAudioProcessor::log(const juce::String& txt)
-{
-	DBG(txt);
-	statusLog += "\n" + txt;
-}
-
-void JMidiTriggerAudioProcessor::debug(const juce::String& txt)
-{
-#ifdef _DEBUG
-	DBG(txt);
-	statusLog += "\n" + txt;
-#endif
-}
 
 
 juce::Array<pugi::string_t> JMidiTriggerAudioProcessor::getEventIdsForListener(const pugi::xml_node* listenerNode)

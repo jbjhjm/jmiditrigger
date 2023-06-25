@@ -21,6 +21,8 @@
       <FILE id="oR3TmD" name="pugixml.hpp" compile="0" resource="0" file="libraries/pugixml.hpp"/>
     </GROUP>
     <GROUP id="{EDB187E8-38F1-489B-090F-4DB0504739F2}" name="Source">
+      <FILE id="uAz0gi" name="StatusLog.cpp" compile="1" resource="0" file="Source/StatusLog.cpp"/>
+      <FILE id="MYOt21" name="StatusLog.h" compile="0" resource="0" file="Source/StatusLog.h"/>
       <FILE id="Tdw6v9" name="XMLReader.cpp" compile="1" resource="0" file="Source/XMLReader.cpp"/>
       <FILE id="MUMR2n" name="XMLReader.h" compile="0" resource="0" file="Source/XMLReader.h"/>
       <FILE id="lOz17f" name="PluginProcessor.cpp" compile="1" resource="0"

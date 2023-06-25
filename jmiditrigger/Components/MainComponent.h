@@ -39,7 +39,7 @@ class MainComponent  : public juce::Component,
 {
 public:
     //==============================================================================
-    MainComponent (JMidiTriggerAudioProcessor& p);
+    MainComponent (JMidiTriggerAudioProcessor& audioProcessor);
     ~MainComponent() override;
 
     //==============================================================================
@@ -69,6 +69,7 @@ private:
     std::unique_ptr<juce::Label> filepathLabel;
     std::unique_ptr<juce::TabbedComponent> juce__tabbedComponent;
     juce::Image cachedImage_background_png_1;
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

@@ -11,6 +11,7 @@
 //==============================================================================
 XMLReader::XMLReader()
 {
+	logger = StatusLog::getInstance();
 }
 
 XMLReader::~XMLReader()
@@ -20,11 +21,11 @@ XMLReader::~XMLReader()
 
 bool XMLReader::loadXmlFile(const juce::File& fi)
 {
-	log("Loading XML File " + fi.getFullPathName());
+	logger.log("Loading XML File " + fi.getFullPathName());
 	xmlReadyState = false;
 	if (!fi.exists())
 	{
-		log("Error - file does not exist: " + fi.getFullPathName());
+		logger.log("Error - file does not exist: " + fi.getFullPathName());
 		xmlFilePath = "";
 		abortLoadXmlFile();
 		return false;
@@ -32,20 +33,20 @@ bool XMLReader::loadXmlFile(const juce::File& fi)
 	else
 	{
 	 	xmlFilePath = fi.getRelativePathFrom(juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile).getParentDirectory());
-	 	debug("debug: rel xmlFilePath = " + xmlFilePath.getValue().toString());
+	 	logger.debug("debug: rel xmlFilePath = " + xmlFilePath.getValue().toString());
 	 	//setStateValue(Identifier("xmlFilePath"), xmlFilePath.getValue().toString());
 	 	//debug("after setstatevalue");
 
 	 	pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(fi.getFullPathName().toRawUTF8());
 
 	 	if (xmlReadSuccess == false) {
-	 		log("Error while reading XML file: " + juce::String(xmlReadSuccess.description()));
+	 		logger.log("Error while reading XML file: " + juce::String(xmlReadSuccess.description()));
 	 		abortLoadXmlFile();
 	 		return false;
 	 	}
 	 	else 
 		{
-	 		log("Successfully parsed file: " + xmlFilePath.toString());
+	 		logger.log("Successfully parsed file: " + xmlFilePath.toString());
 	 		if (!loadXmlData()) { abortLoadXmlFile(); return false; };
 	 		xmlReadyState = true;
 	 		//generateXmlDocumentation();
@@ -58,7 +59,7 @@ bool XMLReader::loadXmlFile(const juce::File& fi)
 bool XMLReader::loadXmlFile(const juce::String& filePath)
 {
 	// File(filePath) is only allowed for absolute paths!
-	debug("load xml file from rel string:" + juce::String(
+	logger.debug("load xml file from rel string:" + juce::String(
 		juce::File::getSpecialLocation(
 			juce::File::SpecialLocationType::currentApplicationFile
 		).getParentDirectory()
@@ -99,16 +100,3 @@ bool XMLReader::loadXmlData()
 }
 
 
-void XMLReader::log(const juce::String& txt)
-{
-	DBG(txt);
-	//statusLog += "\n" + txt;
-}
-
-void XMLReader::debug(const juce::String& txt)
-{
-#ifdef _DEBUG
-	DBG(txt);
-	//statusLog += "\n" + txt;
-#endif
-}

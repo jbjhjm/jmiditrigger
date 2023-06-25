@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "StatusLog.cpp"
 #include "../libraries/pugixml.hpp" 
 
 //==============================================================================
@@ -27,8 +28,7 @@ public:
     bool reloadFile();
     bool loadXmlData();
 
-    void log(const juce::String& txt);
-    void debug(const juce::String& txt);
+    StatusLog logger;// = StatusLog::getInstance();
 
     juce::Value xmlFilePath;
 

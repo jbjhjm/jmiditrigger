@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "XMLReader.h"
 #include "../libraries/pugixml.hpp" 
+#include "StatusLog.cpp"
 
 //==============================================================================
 /**
@@ -70,15 +71,12 @@ public:
     void generateXmlDocumentation();
     juce::Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
 
-    void log(const juce::String& txt);
-    void debug(const juce::String& txt);
-    void logMidiMessage(const juce::String& txt);
     void addMidiMessageToList(const juce::MidiMessage& message, const juce::String& source = "");
     bool processMidiInputMessage(const juce::MidiMessage& message, juce::MidiBuffer& midiOutput);
 
     XMLReader xmlReader;
+    StatusLog logger;
 
-    juce::String statusLog;
     juce::Value midiDataInfo;
 
 

@@ -29,7 +29,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-MainComponent::MainComponent (JMidiTriggerAudioProcessor& p)
+MainComponent::MainComponent (JMidiTriggerAudioProcessor& audioProcessor)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     audioProcessor = &p;
