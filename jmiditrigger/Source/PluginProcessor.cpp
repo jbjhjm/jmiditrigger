@@ -23,6 +23,7 @@ JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
 #endif
 {
 	logger = StatusLog::getInstance();
+	logger.log("Application started");
 }
 
 JMidiTriggerAudioProcessor::~JMidiTriggerAudioProcessor()
@@ -107,26 +108,8 @@ void JMidiTriggerAudioProcessor::releaseResources()
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool JMidiTriggerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
 }
 #endif
 
@@ -152,7 +135,7 @@ void JMidiTriggerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (juce::MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
     {
-        addMidiMessageToList(m);
+		logger.logMidiMessage(m, "processBlock");
         processMidiInputMessage(m, midiOutput);
     }
 
@@ -229,144 +212,23 @@ juce::String JMidiTriggerAudioProcessor::getStateValue(juce::Identifier& key, co
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const juce::File& fi)
 {
-	return xmlReader.loadXmlFile(fi);
+	return XMLReader::getInstance().loadXmlFile(fi);
 }
-
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const juce::String& filePath)
 {
-	return xmlReader.loadXmlFile(filePath);
+	return XMLReader::getInstance().loadXmlFile(filePath);
 }
 
 bool JMidiTriggerAudioProcessor::reloadFile()
 {
-	return xmlReader.reloadFile();
+	return XMLReader::getInstance().reloadFile();
 }
 
-void JMidiTriggerAudioProcessor::generateXmlDocumentation()
-{
-	// if (!xmlReader.xmlReadyState) return;
-	// log("Debug: Generate documentation");
 
-	// juce::String doc = "";
-	// //pugi::xml_node listenerNode = xmlListenersNode->child("listener");
-	// pugi::xml_node eventNode;
-	// juce::Array<pugi::string_t> eventIds;
-	// pugi::string_t eventName;
 
-	// //DBG("Debug: Selected events group node " );
 
-	// for (pugi::xml_node listenerNode = xmlListenersNode.child("listener"); listenerNode; listenerNode = listenerNode.next_sibling("listener")) {
-	// 	DBG("Debug: Found a listener node");
-	// 	doc +=
-	// 		"Listener at Channel " + juce::String(listenerNode.attribute("channel").as_string()) +
-	// 		" " + juce::String(listenerNode.attribute("type").as_string()) +
-	// 		" [ " + juce::String(listenerNode.attribute("key").as_string()) + 
-	// 		" " + juce::String(listenerNode.attribute("value").as_string()) + 
-	// 		" ] " +
-	// 		" ";
 
-	// 	eventIds = getEventIdsForListener(&listenerNode);
-	// 	if (eventIds.size() == 0) {
-	// 		doc += "\t Listener triggers nothing \n";
-	// 	}
-	// 	else {
-	// 		//doc += "\tListener has " + String(eventIds.size()) + " triggers assigned. \n";
-	// 		if (eventIds.size() > 1) {
-	// 			doc += "\n";
-	// 		}
-	// 		for (int i = 0; i < eventIds.size(); i++) {
-	// 			eventNode = xmlEventsNode.find_child_by_attribute("event", "id", eventIds[i].c_str());
-	// 			if (eventNode) {
-	// 				eventName = eventNode.attribute("name").as_string("");
-	// 				if (eventName == "") eventName = eventIds[i].c_str();
-	// 				doc += "\tEvent #" + juce::String(i + 1) + " - " + eventName + "\n";
-	// 			}
-	// 			else {
-	// 				doc += "\tEvent Node '" + juce::String(eventIds[i].c_str()) + "' not found. \n";
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// midiDataInfo = doc;
-	// DBG("Successfully parsed file.");
-}
-
-static juce::String getMidiMessageDescription(const juce::MidiMessage& m)
-{
-
-	juce::String type = "";
-	int channel = 0;
-	int key = 0;
-	int val = 0;
-
-	/*
-	if (m.isNoteOn())           return "Note on " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3);
-	if (m.isNoteOff())          return "Note off " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3);
-	if (m.isProgramChange())    return "Program change " + String(m.getProgramChangeNumber());
-	//if (m.isPitchWheel())       return "Pitch wheel " + String(m.getPitchWheelValue());
-	//if (m.isAftertouch())       return "After touch " + MidiMessage::getMidiNoteName(m.getNoteNumber(), true, true, 3) + ": " + String(m.getAfterTouchValue());
-	//if (m.isChannelPressure())  return "Channel pressure " + String(m.getChannelPressureValue());
-	//if (m.isAllNotesOff())      return "All notes off";
-	//if (m.isAllSoundOff())      return "All sound off";
-	//if (m.isMetaEvent())        return "Meta event";
-	if (m.isController())
-	{
-	String name(MidiMessage::getControllerName(m.getControllerNumber()));
-
-	if (name.isEmpty())
-	name = "[" + String(m.getControllerNumber()) + "]";
-
-	return "Controller " + name + ": " + String(m.getControllerValue());
-	}
-	*/
-
-	channel = m.getChannel();
-	if (m.isNoteOn())
-	{
-		type = "Note On ";
-		key = m.getNoteNumber();
-		val = m.getVelocity();
-	}
-	else if (m.isNoteOff())
-	{
-		type = "Note Off ";
-		key = m.getNoteNumber();
-		val = m.getVelocity();
-	}
-	else if (m.isController())
-	{
-		type = "CC      ";
-		key = m.getControllerNumber();
-		val = m.getControllerValue();
-	}
-	else if (m.isProgramChange())
-	{
-		type = "PC      ";
-		key = m.getProgramChangeNumber();
-		val = 1;
-	}
-
-	return type + " [Ch " + juce::String(channel) + "] " + " (" + juce::String(key) + ", " + juce::String(val) + ") ";
-
-}
-
-void JMidiTriggerAudioProcessor::addMidiMessageToList(const juce::MidiMessage& message, const juce::String& source)
-{
-	const double time = message.getTimeStamp();
-
-	const int hours = ((int)(time / 3600.0)) % 24;
-	const int minutes = ((int)(time / 60.0)) % 60;
-	const int seconds = ((int)time) % 60;
-	const int millis = ((int)(time * 1000.0)) % 1000;
-
-	const juce::String timecode(juce::String::formatted("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis));
-	const juce::String description(getMidiMessageDescription(message));
-	const juce::String midiMessageString(timecode + "  -  " + description + " (" + source + ")");
-
-	logger.log(midiMessageString);
-}
 
 
 bool JMidiTriggerAudioProcessor::processMidiInputMessage(const juce::MidiMessage& message, juce::MidiBuffer& midiOutput)

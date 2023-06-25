@@ -19,6 +19,7 @@ class XMLReader
 {
 public:
     //==============================================================================
+    static XMLReader& getInstance();
     XMLReader();
     ~XMLReader();
 
@@ -27,6 +28,7 @@ public:
     void abortLoadXmlFile();
     bool reloadFile();
     bool loadXmlData();
+    void generateXmlDocumentation();
 
     StatusLog logger;// = StatusLog::getInstance();
 
