@@ -21,7 +21,7 @@
 //[/Headers]
 
 #include "MainComponent.h"
-#include "AboutComponent.h"
+#include "LogComponent.h"
 #include "AboutComponent.h"
 
 
@@ -29,7 +29,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-MainComponent::MainComponent (JMidiTriggerAudioProcessor& audioProcessor)
+MainComponent::MainComponent (JMidiTriggerAudioProcessor& p)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     audioProcessor = &p;
@@ -68,7 +68,7 @@ MainComponent::MainComponent (JMidiTriggerAudioProcessor& audioProcessor)
     juce__tabbedComponent.reset (new juce::TabbedComponent (juce::TabbedButtonBar::TabsAtBottom));
     addAndMakeVisible (juce__tabbedComponent.get());
     juce__tabbedComponent->setTabBarDepth (30);
-    juce__tabbedComponent->addTab (TRANS("Event Log"), juce::Colour (0x25030518), new AboutComponent(), true);
+    juce__tabbedComponent->addTab (TRANS("Event Log"), juce::Colour (0x25030518), new LogComponent(), true);
     juce__tabbedComponent->addTab (TRANS("Commands Reference"), juce::Colours::lightgrey, new AboutComponent(), true);
     juce__tabbedComponent->addTab (TRANS("XML Example"), juce::Colours::lightgrey, 0, false);
     juce__tabbedComponent->addTab (TRANS("About"), juce::Colours::lightgrey, 0, false);
@@ -220,7 +220,7 @@ void MainComponent::showFileDialogue()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MainComponent" componentName=""
-                 parentClasses="public juce::Component" constructorParams="JMidiTriggerAudioProcessor&amp; audioProcessor"
+                 parentClasses="public juce::Component" constructorParams="JMidiTriggerAudioProcessor&amp; p"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="ff323e44">
@@ -244,7 +244,7 @@ BEGIN_JUCER_METADATA
                    virtualName="" explicitFocusOrder="0" pos="16 96 576 296" orientation="bottom"
                    tabBarDepth="30" initialTab="0">
     <TAB name="Event Log" colour="25030518" useJucerComp="1" contentClassName=""
-         constructorParams="" jucerComponentFile="AboutComponent.cpp"/>
+         constructorParams="" jucerComponentFile="LogComponent.cpp"/>
     <TAB name="Commands Reference" colour="ffd3d3d3" useJucerComp="1"
          contentClassName="" constructorParams="" jucerComponentFile="AboutComponent.cpp"/>
     <TAB name="XML Example" colour="ffd3d3d3" useJucerComp="1" contentClassName=""

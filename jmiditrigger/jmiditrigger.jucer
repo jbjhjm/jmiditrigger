@@ -7,6 +7,9 @@
               pluginManufacturerCode="sctr" pluginCode="jmtr">
   <MAINGROUP id="nIXnNl" name="jmiditrigger">
     <GROUP id="{970AD132-6F86-BBE3-C62B-7DF6194751E9}" name="Components">
+      <FILE id="ouLxbn" name="LogComponent.cpp" compile="1" resource="0"
+            file="Components/LogComponent.cpp"/>
+      <FILE id="DXcn1t" name="LogComponent.h" compile="0" resource="0" file="Components/LogComponent.h"/>
       <FILE id="Jx79cQ" name="AboutComponent.cpp" compile="1" resource="0"
             file="Components/AboutComponent.cpp"/>
       <FILE id="hHY3NJ" name="AboutComponent.h" compile="0" resource="0"
@@ -21,8 +24,9 @@
       <FILE id="oR3TmD" name="pugixml.hpp" compile="0" resource="0" file="libraries/pugixml.hpp"/>
     </GROUP>
     <GROUP id="{EDB187E8-38F1-489B-090F-4DB0504739F2}" name="Source">
+      <FILE id="hWKqLv" name="Store.cpp" compile="1" resource="0" file="Source/Store.cpp"/>
+      <FILE id="uMXyZh" name="IDS.cpp" compile="1" resource="0" file="Source/IDS.cpp"/>
       <FILE id="uAz0gi" name="StatusLog.cpp" compile="1" resource="0" file="Source/StatusLog.cpp"/>
-      <FILE id="MYOt21" name="StatusLog.h" compile="0" resource="0" file="Source/StatusLog.h"/>
       <FILE id="Tdw6v9" name="XMLReader.cpp" compile="1" resource="0" file="Source/XMLReader.cpp"/>
       <FILE id="MUMR2n" name="XMLReader.h" compile="0" resource="0" file="Source/XMLReader.h"/>
       <FILE id="lOz17f" name="PluginProcessor.cpp" compile="1" resource="0"

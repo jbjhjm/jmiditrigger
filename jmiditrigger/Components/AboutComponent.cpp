@@ -34,11 +34,11 @@ AboutComponent::AboutComponent ()
 
     juce__textEditor.reset (new juce::TextEditor ("new text editor"));
     addAndMakeVisible (juce__textEditor.get());
-    juce__textEditor->setMultiLine (false);
-    juce__textEditor->setReturnKeyStartsNewLine (false);
-    juce__textEditor->setReadOnly (false);
+    juce__textEditor->setMultiLine (true);
+    juce__textEditor->setReturnKeyStartsNewLine (true);
+    juce__textEditor->setReadOnly (true);
     juce__textEditor->setScrollbarsShown (true);
-    juce__textEditor->setCaretVisible (true);
+    juce__textEditor->setCaretVisible (false);
     juce__textEditor->setPopupMenuEnabled (true);
     juce__textEditor->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
     juce__textEditor->setText (TRANS("Custom Plugin Developed by Jannik Mewes for www.sector.band, 2023"));
@@ -111,8 +111,8 @@ BEGIN_JUCER_METADATA
   <TEXTEDITOR name="new text editor" id="15f9c85e329dc16f" memberName="juce__textEditor"
               virtualName="" explicitFocusOrder="0" pos="0 0 100% 100%" bkgcol="0"
               initialText="Custom Plugin Developed by Jannik Mewes for www.sector.band, 2023"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              multiline="1" retKeyStartsLine="1" readonly="1" scrollbars="1"
+              caret="0" popupmenu="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

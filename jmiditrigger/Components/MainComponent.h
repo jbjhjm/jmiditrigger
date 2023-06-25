@@ -39,7 +39,7 @@ class MainComponent  : public juce::Component,
 {
 public:
     //==============================================================================
-    MainComponent (JMidiTriggerAudioProcessor& audioProcessor);
+    MainComponent (JMidiTriggerAudioProcessor& p);
     ~MainComponent() override;
 
     //==============================================================================
