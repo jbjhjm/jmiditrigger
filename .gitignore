@@ -12,3 +12,9 @@
 *.res
 *.rc
 *.exp
+build
+Builds
+alt
+Projucer/examples
+Projucer/docs
+Projucer/extras
