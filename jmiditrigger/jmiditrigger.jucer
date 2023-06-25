@@ -7,6 +7,14 @@
               pluginManufacturerCode="sctr" pluginCode="jmtr">
   <MAINGROUP id="nIXnNl" name="jmiditrigger">
     <GROUP id="{EDB187E8-38F1-489B-090F-4DB0504739F2}" name="Source">
+      <FILE id="AKyICA" name="UpdateableComponent.cpp" compile="1" resource="0"
+            file="Source/UpdateableComponent.cpp"/>
+      <FILE id="zeaKOj" name="UpdateableComponent.h" compile="0" resource="0"
+            file="Source/UpdateableComponent.h"/>
+      <FILE id="RhAJlk" name="AboutComponent.cpp" compile="1" resource="0"
+            file="Source/AboutComponent.cpp"/>
+      <FILE id="WDdg6o" name="AboutComponent.h" compile="0" resource="0"
+            file="Source/AboutComponent.h"/>
       <FILE id="t7WJIx" name="TestComponent.cpp" compile="1" resource="0"
             file="Source/TestComponent.cpp"/>
       <FILE id="Wus61F" name="TestComponent.h" compile="0" resource="0" file="Source/TestComponent.h"/>
