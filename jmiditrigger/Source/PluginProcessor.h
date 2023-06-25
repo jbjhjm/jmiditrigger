@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "XMLReader.h"
 #include "../libraries/pugixml.hpp" 
 
 //==============================================================================
@@ -65,10 +66,8 @@ public:
 
     bool loadXmlFile(const juce::String& filePath);
     bool loadXmlFile(const juce::File& fi);
-    void abortLoadXmlFile();
     bool reloadFile();
     void generateXmlDocumentation();
-    bool loadXmlData();
     juce::Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
 
     void log(const juce::String& txt);
@@ -77,15 +76,11 @@ public:
     void addMidiMessageToList(const juce::MidiMessage& message, const juce::String& source = "");
     bool processMidiInputMessage(const juce::MidiMessage& message, juce::MidiBuffer& midiOutput);
 
-    juce::Value xmlFilePath;
+    XMLReader xmlReader;
+
     juce::String statusLog;
     juce::Value midiDataInfo;
 
-    pugi::xml_document xmlDoc;
-    pugi::xml_node xmlRootNode;
-    pugi::xml_node xmlEventsNode;
-    pugi::xml_node xmlListenersNode;
-    bool xmlReadyState = false;
 
 
 private:
