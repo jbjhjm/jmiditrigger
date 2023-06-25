@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "../libraries/pugixml.hpp" 
 
 //==============================================================================
 /**
@@ -55,6 +56,37 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+    //============================================================================== CUSTOM START
+
+    void setStateValue(juce::Identifier& key, const juce::String& value);
+    juce::String getStateValue(juce::Identifier& key, const juce::String& defaultValue);
+    // String currentStatus = "___";
+
+    bool loadXmlFile(const juce::String& filePath);
+    bool loadXmlFile(const juce::File& fi);
+    void abortLoadXmlFile();
+    bool reloadFile();
+    void generateXmlDocumentation();
+    bool loadXmlData();
+    juce::Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
+
+    void log(const juce::String& txt);
+    void debug(const juce::String& txt);
+    void logMidiMessage(const juce::String& txt);
+    void addMidiMessageToList(const juce::MidiMessage& message, const juce::String& source = "");
+    bool processMidiInputMessage(const juce::MidiMessage& message, juce::MidiBuffer& midiOutput);
+
+    juce::Value xmlFilePath;
+    juce::String statusLog;
+    juce::Value midiDataInfo;
+
+    pugi::xml_document xmlDoc;
+    pugi::xml_node xmlRootNode;
+    pugi::xml_node xmlEventsNode;
+    pugi::xml_node xmlListenersNode;
+    bool xmlReadyState = false;
+
 
 private:
     //==============================================================================

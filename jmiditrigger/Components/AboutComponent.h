@@ -33,12 +33,12 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class TestComponent  : public juce::Component
+class AboutComponent  : public juce::Component
 {
 public:
     //==============================================================================
-    TestComponent ();
-    ~TestComponent() override;
+    AboutComponent ();
+    ~AboutComponent() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -54,10 +54,11 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<juce::TextEditor> juce__textEditor;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AboutComponent)
 };
 
 //[EndFile] You can add extra defines here...

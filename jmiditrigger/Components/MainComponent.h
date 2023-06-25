@@ -20,8 +20,8 @@
 #pragma once
 
 //[Headers]     -- You can add your own extra header files here --
-#include "JuceHeader.h"
-#include "UpdateableComponent.h"
+#include <JuceHeader.h>
+#include "../Source/PluginProcessor.h"
 //[/Headers]
 
 
@@ -29,37 +29,49 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
+    An auto-generated component, created by the Projucer.
 
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class XmlGuideComponent  : public Component
+class MainComponent  : public juce::Component,
+                       public juce::Button::Listener
 {
 public:
     //==============================================================================
-    XmlGuideComponent ();
-    ~XmlGuideComponent() override;
+    MainComponent (JMidiTriggerAudioProcessor& p);
+    ~MainComponent() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void timerCallback();
+    void showFileDialogue();
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;
     void resized() override;
+    void buttonClicked (juce::Button* buttonThatWasClicked) override;
 
+    // Binary resources:
+    static const char* background_png;
+    static const int background_pngSize;
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+    JMidiTriggerAudioProcessor* audioProcessor;
+    std::unique_ptr<juce::FileChooser> chooser;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<juce::TextEditor> XmlGuideTextarea;
-
+    std::unique_ptr<juce::TextButton> selectFileButton;
+    std::unique_ptr<juce::TextButton> refreshFileButton;
+    std::unique_ptr<juce::Label> filepathLabel;
+    std::unique_ptr<juce::TabbedComponent> juce__tabbedComponent;
+    juce::Image cachedImage_background_png_1;
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XmlGuideComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
 
 //[EndFile] You can add extra defines here...

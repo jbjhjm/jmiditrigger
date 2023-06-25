@@ -27,27 +27,24 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-XmlGuideComponent::XmlGuideComponent ()
+AboutComponent::AboutComponent ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    XmlGuideTextarea.reset (new juce::TextEditor ("XmlGuideTextarea"));
-    addAndMakeVisible (XmlGuideTextarea.get());
-    XmlGuideTextarea->setMultiLine (true);
-    XmlGuideTextarea->setReturnKeyStartsNewLine (true);
-    XmlGuideTextarea->setReadOnly (true);
-    XmlGuideTextarea->setScrollbarsShown (true);
-    XmlGuideTextarea->setCaretVisible (false);
-    XmlGuideTextarea->setPopupMenuEnabled (true);
-    XmlGuideTextarea->setColour (juce::TextEditor::textColourId, juce::Colours::white);
-    XmlGuideTextarea->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x000d2639));
-    XmlGuideTextarea->setColour (juce::TextEditor::shadowColourId, juce::Colour (0x00000000));
-    XmlGuideTextarea->setText (TRANS("bla bla"));
+    juce__textEditor.reset (new juce::TextEditor ("new text editor"));
+    addAndMakeVisible (juce__textEditor.get());
+    juce__textEditor->setMultiLine (false);
+    juce__textEditor->setReturnKeyStartsNewLine (false);
+    juce__textEditor->setReadOnly (false);
+    juce__textEditor->setScrollbarsShown (true);
+    juce__textEditor->setCaretVisible (true);
+    juce__textEditor->setPopupMenuEnabled (true);
+    juce__textEditor->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0x00000000));
+    juce__textEditor->setText (TRANS("Custom Plugin Developed by Jannik Mewes for www.sector.band, 2023"));
 
 
     //[UserPreSize]
-	AboutTextarea->setText(TRANS("Custom Plugin Developed by Jannik Mewes, 2016"));
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -57,12 +54,12 @@ XmlGuideComponent::XmlGuideComponent ()
     //[/Constructor]
 }
 
-XmlGuideComponent::~XmlGuideComponent()
+AboutComponent::~AboutComponent()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    XmlGuideTextarea = nullptr;
+    juce__textEditor = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -70,21 +67,23 @@ XmlGuideComponent::~XmlGuideComponent()
 }
 
 //==============================================================================
-void XmlGuideComponent::paint (juce::Graphics& g)
+void AboutComponent::paint (juce::Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
+
+    g.fillAll (juce::Colour (0xff323e44));
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
 
-void XmlGuideComponent::resized()
+void AboutComponent::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    XmlGuideTextarea->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    juce__textEditor->setBounds (0, 0, proportionOfWidth (1.0000f), proportionOfHeight (1.0000f));
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -104,15 +103,16 @@ void XmlGuideComponent::resized()
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="XmlGuideComponent" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
+<JUCER_COMPONENT documentType="Component" className="AboutComponent" componentName=""
+                 parentClasses="public juce::Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="600" initialHeight="400">
-  <BACKGROUND backgroundColour="ffffff"/>
-  <TEXTEDITOR name="XmlGuideTextarea" id="9164189f3c8afac2" memberName="XmlGuideTextarea"
-              virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" textcol="ffffffff"
-              bkgcol="d2639" shadowcol="0" initialText="bla bla" multiline="1"
-              retKeyStartsLine="1" readonly="1" scrollbars="1" caret="0" popupmenu="1"/>
+  <BACKGROUND backgroundColour="ff323e44"/>
+  <TEXTEDITOR name="new text editor" id="15f9c85e329dc16f" memberName="juce__textEditor"
+              virtualName="" explicitFocusOrder="0" pos="0 0 100% 100%" bkgcol="0"
+              initialText="Custom Plugin Developed by Jannik Mewes for www.sector.band, 2023"
+              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
+              caret="1" popupmenu="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -6,18 +6,21 @@
               pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturerCode="sctr" pluginCode="jmtr">
   <MAINGROUP id="nIXnNl" name="jmiditrigger">
+    <GROUP id="{970AD132-6F86-BBE3-C62B-7DF6194751E9}" name="Components">
+      <FILE id="Jx79cQ" name="AboutComponent.cpp" compile="1" resource="0"
+            file="Components/AboutComponent.cpp"/>
+      <FILE id="hHY3NJ" name="AboutComponent.h" compile="0" resource="0"
+            file="Components/AboutComponent.h"/>
+      <FILE id="y6nFXo" name="MainComponent.cpp" compile="1" resource="0"
+            file="Components/MainComponent.cpp"/>
+      <FILE id="yv7g5G" name="MainComponent.h" compile="0" resource="0" file="Components/MainComponent.h"/>
+    </GROUP>
+    <GROUP id="{92CFACB3-0AA1-3BEC-B5D2-F4CA582A3D8B}" name="Libraries">
+      <FILE id="ZgENFa" name="pugiconfig.hpp" compile="0" resource="0" file="libraries/pugiconfig.hpp"/>
+      <FILE id="VfOT4Z" name="pugixml.cpp" compile="1" resource="0" file="libraries/pugixml.cpp"/>
+      <FILE id="oR3TmD" name="pugixml.hpp" compile="0" resource="0" file="libraries/pugixml.hpp"/>
+    </GROUP>
     <GROUP id="{EDB187E8-38F1-489B-090F-4DB0504739F2}" name="Source">
-      <FILE id="AKyICA" name="UpdateableComponent.cpp" compile="1" resource="0"
-            file="Source/UpdateableComponent.cpp"/>
-      <FILE id="zeaKOj" name="UpdateableComponent.h" compile="0" resource="0"
-            file="Source/UpdateableComponent.h"/>
-      <FILE id="RhAJlk" name="AboutComponent.cpp" compile="1" resource="0"
-            file="Source/AboutComponent.cpp"/>
-      <FILE id="WDdg6o" name="AboutComponent.h" compile="0" resource="0"
-            file="Source/AboutComponent.h"/>
-      <FILE id="t7WJIx" name="TestComponent.cpp" compile="1" resource="0"
-            file="Source/TestComponent.cpp"/>
-      <FILE id="Wus61F" name="TestComponent.h" compile="0" resource="0" file="Source/TestComponent.h"/>
       <FILE id="lOz17f" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="XbpD3E" name="PluginProcessor.h" compile="0" resource="0"

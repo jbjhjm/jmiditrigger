@@ -15,7 +15,11 @@ JMidiTriggerAudioProcessorEditor::JMidiTriggerAudioProcessorEditor (JMidiTrigger
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (600, 400);
+   // MainComponent* x = new MainComponent(p);
+    mainComponent = std::make_unique<MainComponent>(p);
+   // this->mainComponent = new MainComponent(p);
+    addAndMakeVisible(mainComponent.get());
 }
 
 JMidiTriggerAudioProcessorEditor::~JMidiTriggerAudioProcessorEditor()
@@ -35,6 +39,7 @@ void JMidiTriggerAudioProcessorEditor::paint (juce::Graphics& g)
 
 void JMidiTriggerAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    // fit main Component into Editor view
+    // // crashes for some reason.
+    //(*mainComponent.get()).setBounds(getLocalBounds());
 }
