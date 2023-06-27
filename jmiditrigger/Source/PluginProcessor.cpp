@@ -229,137 +229,140 @@ bool JMidiTriggerAudioProcessor::reloadFile()
 
 
 
+auto JMidiTriggerAudioProcessor::getMidiMessageTypeAndKey(const juce::MidiMessage& message)
+{
+	juce::String type = "";
+	int channel = 0;
+	int key = 0;
+
+	if (message.isNoteOn())
+	{
+		type = "noteon";
+		key = message.getNoteNumber();
+	}
+	else if (message.isNoteOff())
+	{
+		type = "noteoff";
+		key = message.getNoteNumber();
+	}
+	else if (message.isController())
+	{
+		type = "cc";
+		key = message.getControllerNumber();
+	}
+	else if (message.isProgramChange())
+	{
+		type = "pc";
+		key = message.getProgramChangeNumber();
+	}
+
+	struct result { juce::String type; int key; };
+	return result{ type, key };
+
+}
+
+pugi::xpath_variable_set JMidiTriggerAudioProcessor::createXMLListenerQueryParams(int channel, int key, juce::String type) {
+	pugi::xpath_variable_set params;
+
+	params.add("channel", pugi::xpath_value_type::xpath_type_number);
+	params.add("type", pugi::xpath_value_type::xpath_type_string);
+	params.add("key", pugi::xpath_value_type::xpath_type_number);
+
+	params.set("channel", double(channel));
+	params.set("type", type.getCharPointer());
+	params.set("key", double(key));
+
+	return params;
+}
+
+auto JMidiTriggerAudioProcessor::createMidiMessage(MidiMessageInfo info)
+{
+	MidiMessage outMidiMsg;
+
+	if (info.type == "noteon") {
+		outMidiMsg = MidiMessage::noteOn(info.channel, info.key, float(info.value));
+	}
+	else if (info.type == "noteoff") {
+		outMidiMsg = MidiMessage::noteOff(info.channel, info.key, float(info.value));
+	}
+	else if (info.type == "cc") {
+		outMidiMsg = MidiMessage::controllerEvent(info.channel, info.key, info.value);
+	}
+	else if (info.type == "pc") {
+		outMidiMsg = MidiMessage::programChange(info.channel, info.key);
+	}
+
+	return outMidiMsg;
+}
+
 
 
 bool JMidiTriggerAudioProcessor::processMidiInputMessage(const juce::MidiMessage& message, juce::MidiBuffer& midiOutput)
 {
-	return false;
 	//<listener channel = "2" type = "cc" key = "11" >
-	//m = MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
-	// juce::String type = "";
-	// int channel = 0;
-	// int key = 0;
+	//const MidiMessage m = MidiMessage::noteOn(message.getChannel(), message.getNoteNumber(), newVel);
 
-	// pugi::xpath_variable_set params;
-	// bool foundAnyData = false;
+	auto [type, key] = getMidiMessageTypeAndKey(message);
+	XMLReader& xmlReader = XMLReader::getInstance();
+	int channel = message.getChannel();
 
-	// params.add("channel", pugi::xpath_value_type::xpath_type_number);
-	// params.add("type", pugi::xpath_value_type::xpath_type_string);
-	// params.add("key", pugi::xpath_value_type::xpath_type_number);
+	pugi::xpath_variable_set params = createXMLListenerQueryParams(channel, key, type);
 
-	// channel = message.getChannel();
-	// if (message.isNoteOn())
-	// {
-	// 	type = "noteon";
-	// 	key = message.getNoteNumber();
-	// }
-	// else if (message.isNoteOff())
-	// {
-	// 	type = "noteoff";
-	// 	key = message.getNoteNumber();
-	// }
-	// else if (message.isController())
-	// {
-	// 	type = "cc";
-	// 	key = message.getControllerNumber();
-	// }
-	// else if (message.isProgramChange())
-	// {
-	// 	type = "pc";
-	// 	key = message.getProgramChangeNumber();
-	// }
+	logger.debug("search listener for type=" + juce::String(type) + " channel=" + juce::String(channel) + " key=" + juce::String(key));
 
-	// params.set("channel", double(channel));
-	// params.set("type", type.getCharPointer());
-	// params.set("key", double(key));
+	bool foundAnyData = false;
+	/**
+	  Reminder: we are searching for 
+	  - a listener (=targetNode) 
+	  - that contains IDs pointing to one or multiple events by ID
+	  - each of those events can contain multiple instructions on to-be-sent data.
+	  */
+	// [@type=string(type) or @type=all]
+	//pugi::xpath_query midiListenerQuery(listenerQuery);
+	pugi::xpath_query midiListenerQuery("listener[@channel=number($channel)][@key=number($key)][@type=string($type) or @type='all']", &params);
+	pugi::xpath_node targetNode = midiListenerQuery.evaluate_node(xmlReader.parser->xmlListenersNode);
+	Array<pugi::string_t> eventIds = xmlReader.parser->getEventIdsForListener(&targetNode.node());
 
-	// debug("search listener for type=" + juce::String(type) + " channel=" + juce::String(channel) + " key=" + juce::String(key));
+	if (targetNode) {
 
-	// // [@type=string(type) or @type=all]
-	// pugi::xpath_query midiListenerQuery("listener[@channel=number($channel)][@key=number($key)][@type=string($type) or @type='all']", &params);
-	// pugi::xpath_node targetNode = midiListenerQuery.evaluate_node(xmlListenersNode);
-	// if (targetNode) {
+		if (type == "noteoff" && targetNode.node().attribute("type").as_string() == "all") {
+			// ignore noteoff midi input for type "all" listeners
+			return false;
+		}
 
-	// 	if (type == "noteoff" && targetNode.node().attribute("type").as_string() == "all") {
-	// 		// ignore noteoff midi input for type "all" listeners
-	// 		return false;
-	// 	}
+		logger.debug("midi event found: " + String(targetNode.node().name()));
+		pugi::xml_node eventNode;
+		pugi::xml_node midiNode;
+		int sortIndex = 0;
+		MidiMessage outMidiMsg;
 
-	// 	debug("midi event found: " + String(targetNode.node().name()));
-	// 	pugi::xml_node eventNode;
-	// 	pugi::xml_node midiNode;
-	// 	pugi::string_t outType;
-	// 	int outChannel;
-	// 	int outKey;
-	// 	int outVal;
-	// 	int sortIndex = 0;
-	// 	Array<pugi::string_t> eventIds = getEventIdsForListener(&targetNode.node());
-	// 	MidiMessage outMidiMsg;
+		//debug("Listener has " + String(eventIds.size()) + " triggers assigned.");
+		for (int i = 0; i < eventIds.size(); i++) {
+			eventNode = xmlReader.parser->getEventNode(eventIds[i]);
+			logger.debug("Listener trigger #" + String(i + 1) + ": " + String(eventIds[i].c_str()) + " node found: " + String(eventNode.name()));
+			if (eventNode) {
+				midiNode = eventNode.child("midi");
+				for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
+					sortIndex++;
 
-	// 	//debug("Listener has " + String(eventIds.size()) + " triggers assigned.");
-	// 	for (int i = 0; i < eventIds.size(); i++) {
-	// 		eventNode = xmlEventsNode.find_child_by_attribute("event", "id", eventIds[i].c_str());
-	// 		debug("Listener trigger #" + String(i + 1) + ": " + String(eventIds[i].c_str()) + " node found: " + String(eventNode.name()));
-	// 		if (eventNode) {
-	// 			midiNode = eventNode.child("midi");
-	// 			for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
-	// 				sortIndex++;
-	// 				outChannel = midiNode.attribute("channel").as_int(1);
-	// 				outType = midiNode.attribute("type").as_string("");
-	// 				outKey = midiNode.attribute("key").as_int(0);
-	// 				outVal = midiNode.attribute("value").as_int(0);
-	// 				debug("Send midi " + String(outType) + " @Ch " + String(outChannel) + " " + String(outKey) + "," + String(outVal));
-	// 				if (outType == "noteon") {
-	// 					outMidiMsg = MidiMessage::noteOn(outChannel, outKey, float(outVal));
-	// 				}
-	// 				else if (outType == "noteoff") {
-	// 					outMidiMsg = MidiMessage::noteOff(outChannel, outKey, float(outVal));
-	// 				}
-	// 				else if (outType == "cc") {
-	// 					outMidiMsg = MidiMessage::controllerEvent(outChannel, outKey, outVal);
-	// 				}
-	// 				else if (outType == "pc") {
-	// 					outMidiMsg = MidiMessage::programChange(outChannel, outKey);
-	// 				}
-	// 				foundAnyData = true;
-	// 				midiOutput.addEvent(outMidiMsg, sortIndex);
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			//doc += "\tEvent Node '" + String(eventIds[i].c_str()) + "' not found. \n";
-	// 		}
-	// 	}
-	// }
-	// else
-	// {
-	// 	debug("midi event has no listener assigned.");
-	// }
-	// return foundAnyData;
+					MidiMessageInfo info = xmlReader.parser->midiNodeToMidiMessageInfo(midiNode);
+					outMidiMsg = createMidiMessage(info);
+
+					logger.debug("Send midi " + String(info.type) + " @Ch " + String(info.channel) + " " + String(info.key) + "," + String(info.value));
+					foundAnyData = true;
+					midiOutput.addEvent(outMidiMsg, sortIndex);
+				}
+			}
+		}
+	}
+	else
+	{
+		logger.debug("midi event has no listener assigned.");
+	}
+	return foundAnyData;
 }
 
 
-
-juce::Array<pugi::string_t> JMidiTriggerAudioProcessor::getEventIdsForListener(const pugi::xml_node* listenerNode)
-{
-	juce::Array<pugi::string_t> EventIds;
-	// pugi::string_t eventId;
-	// pugi::xml_node triggerNode;
-
-	// // trigger attribute shortcut
-	// eventId = listenerNode->attribute("trigger").as_string("");
-	// if (eventId != "") EventIds.add(eventId);
-
-	// triggerNode = listenerNode->child("trigger");
-	// //log("found a trigger node with tag " + String(triggerNode.name()) );
-	// for (triggerNode; triggerNode; triggerNode = triggerNode.next_sibling("trigger")) {
-	// 	eventId = triggerNode.attribute("id").as_string("");
-	// 	//log("<trigger> with id "+eventId);
-	// 	if (eventId != "") EventIds.add(eventId);
-	// }
-
-	return EventIds;
-}
 
 
 

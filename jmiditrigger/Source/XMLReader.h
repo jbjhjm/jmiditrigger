@@ -10,9 +10,11 @@
 
 #include <JuceHeader.h>
 #include "StatusLog.cpp"
+#include "XMLParser.h"
 #include "../libraries/pugixml.hpp" 
 
 //==============================================================================
+
 /**
 */
 class XMLReader 
@@ -27,17 +29,13 @@ public:
     bool loadXmlFile(const juce::File& fi);
     void abortLoadXmlFile();
     bool reloadFile();
-    bool loadXmlData();
-    void generateXmlDocumentation();
 
     StatusLog logger;// = StatusLog::getInstance();
+    XMLParser* parser;
 
     juce::Value xmlFilePath;
-
     pugi::xml_document xmlDoc;
-    pugi::xml_node xmlRootNode;
-    pugi::xml_node xmlEventsNode;
-    pugi::xml_node xmlListenersNode;
+
     bool xmlReadyState = false;
 
 

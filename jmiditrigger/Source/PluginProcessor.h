@@ -14,6 +14,7 @@
 #include "StatusLog.cpp"
 
 //==============================================================================
+
 /**
 */
 class JMidiTriggerAudioProcessor  : public juce::AudioProcessor
@@ -68,13 +69,10 @@ public:
     bool loadXmlFile(const juce::String& filePath);
     bool loadXmlFile(const juce::File& fi);
     bool reloadFile();
-    void generateXmlDocumentation();
-    juce::Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
 
-    void addMidiMessageToList(const juce::MidiMessage& message, const juce::String& source = "");
+    //void addMidiMessageToList(const juce::MidiMessage& message, const juce::String& source = "");
     bool processMidiInputMessage(const juce::MidiMessage& message, juce::MidiBuffer& midiOutput);
 
-    XMLReader xmlReader;
     StatusLog logger;
 
     juce::Value midiDataInfo;
@@ -83,5 +81,9 @@ public:
 
 private:
     //==============================================================================
+    auto getMidiMessageTypeAndKey(const juce::MidiMessage& message);
+    pugi::xpath_variable_set createXMLListenerQueryParams(int channel, int key, juce::String type);
+    auto createMidiMessage(MidiMessageInfo info);
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JMidiTriggerAudioProcessor)
 };
