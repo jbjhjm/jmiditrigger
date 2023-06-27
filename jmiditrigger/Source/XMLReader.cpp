@@ -15,10 +15,10 @@ XMLReader& XMLReader::getInstance()
 }
 
 //==============================================================================
-XMLReader::XMLReader()
+XMLReader::XMLReader():
+	logger (StatusLog::getInstance()),
+	parser (&XMLParser::getInstance())
 {
-	logger = StatusLog::getInstance();
-	parser = &XMLParser::getInstance();
 	documentation = "No config data loaded yet";
 }
 

@@ -19,10 +19,10 @@ JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+     ),
+	logger (StatusLog::getInstance())
 #endif
 {
-	logger = StatusLog::getInstance();
 	logger.log("Application started");
 }
 
@@ -261,39 +261,6 @@ auto JMidiTriggerAudioProcessor::getMidiMessageTypeAndKey(const juce::MidiMessag
 
 }
 
-pugi::xpath_variable_set JMidiTriggerAudioProcessor::createXMLListenerQueryParams(int channel, int key, juce::String type) {
-	pugi::xpath_variable_set params;
-
-	params.add("channel", pugi::xpath_value_type::xpath_type_number);
-	params.add("type", pugi::xpath_value_type::xpath_type_string);
-	params.add("key", pugi::xpath_value_type::xpath_type_number);
-
-	params.set("channel", double(channel));
-	params.set("type", type.getCharPointer());
-	params.set("key", double(key));
-
-	return params;
-}
-
-auto JMidiTriggerAudioProcessor::createMidiMessage(MidiMessageInfo info)
-{
-	MidiMessage outMidiMsg;
-
-	if (info.type == "noteon") {
-		outMidiMsg = MidiMessage::noteOn(info.channel, info.key, float(info.value));
-	}
-	else if (info.type == "noteoff") {
-		outMidiMsg = MidiMessage::noteOff(info.channel, info.key, float(info.value));
-	}
-	else if (info.type == "cc") {
-		outMidiMsg = MidiMessage::controllerEvent(info.channel, info.key, info.value);
-	}
-	else if (info.type == "pc") {
-		outMidiMsg = MidiMessage::programChange(info.channel, info.key);
-	}
-
-	return outMidiMsg;
-}
 
 
 
@@ -303,63 +270,12 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const juce::MidiMessage
 	//const MidiMessage m = MidiMessage::noteOn(message.getChannel(), message.getNoteNumber(), newVel);
 
 	auto [type, key] = getMidiMessageTypeAndKey(message);
-	XMLReader& xmlReader = XMLReader::getInstance();
 	int channel = message.getChannel();
 
-	pugi::xpath_variable_set params = createXMLListenerQueryParams(channel, key, type);
-
-	logger.debug("search listener for type=" + juce::String(type) + " channel=" + juce::String(channel) + " key=" + juce::String(key));
-
 	bool foundAnyData = false;
-	/**
-	  Reminder: we are searching for 
-	  - a listener (=targetNode) 
-	  - that contains IDs pointing to one or multiple events by ID
-	  - each of those events can contain multiple instructions on to-be-sent data.
-	  */
-	// [@type=string(type) or @type=all]
-	//pugi::xpath_query midiListenerQuery(listenerQuery);
-	pugi::xpath_query midiListenerQuery("listener[@channel=number($channel)][@key=number($key)][@type=string($type) or @type='all']", &params);
-	pugi::xpath_node targetNode = midiListenerQuery.evaluate_node(xmlReader.parser->xmlListenersNode);
-	Array<pugi::string_t> eventIds = xmlReader.parser->getEventIdsForListener(&targetNode.node());
 
-	if (targetNode) {
-
-		if (type == "noteoff" && targetNode.node().attribute("type").as_string() == "all") {
-			// ignore noteoff midi input for type "all" listeners
-			return false;
-		}
-
-		logger.debug("midi event found: " + String(targetNode.node().name()));
-		pugi::xml_node eventNode;
-		pugi::xml_node midiNode;
-		int sortIndex = 0;
-		MidiMessage outMidiMsg;
-
-		//debug("Listener has " + String(eventIds.size()) + " triggers assigned.");
-		for (int i = 0; i < eventIds.size(); i++) {
-			eventNode = xmlReader.parser->getEventNode(eventIds[i]);
-			logger.debug("Listener trigger #" + String(i + 1) + ": " + String(eventIds[i].c_str()) + " node found: " + String(eventNode.name()));
-			if (eventNode) {
-				midiNode = eventNode.child("midi");
-				for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
-					sortIndex++;
-
-					MidiMessageInfo info = xmlReader.parser->midiNodeToMidiMessageInfo(midiNode);
-					outMidiMsg = createMidiMessage(info);
-
-					logger.debug("Send midi " + String(info.type) + " @Ch " + String(info.channel) + " " + String(info.key) + "," + String(info.value));
-					foundAnyData = true;
-					midiOutput.addEvent(outMidiMsg, sortIndex);
-				}
-			}
-		}
-	}
-	else
-	{
-		logger.debug("midi event has no listener assigned.");
-	}
-	return foundAnyData;
+	XMLReader& xmlReader = XMLReader::getInstance();
+    return xmlReader.parser->handleMidiEvent(channel, key, type, midiOutput);
 }
 
 

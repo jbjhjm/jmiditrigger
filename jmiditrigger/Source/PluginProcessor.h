@@ -12,6 +12,7 @@
 #include "XMLReader.h"
 #include "../libraries/pugixml.hpp" 
 #include "StatusLog.cpp"
+#include "MidiUtils.h"
 
 //==============================================================================
 
@@ -82,8 +83,6 @@ public:
 private:
     //==============================================================================
     auto getMidiMessageTypeAndKey(const juce::MidiMessage& message);
-    pugi::xpath_variable_set createXMLListenerQueryParams(int channel, int key, juce::String type);
-    auto createMidiMessage(MidiMessageInfo info);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JMidiTriggerAudioProcessor)
 };
