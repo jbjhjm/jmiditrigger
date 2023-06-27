@@ -7,6 +7,9 @@
               pluginManufacturerCode="sctr" pluginCode="jmtr">
   <MAINGROUP id="nIXnNl" name="jmiditrigger">
     <GROUP id="{970AD132-6F86-BBE3-C62B-7DF6194751E9}" name="Components">
+      <FILE id="jVjDY6" name="DocComponent.cpp" compile="1" resource="0"
+            file="Components/DocComponent.cpp"/>
+      <FILE id="VufEyO" name="DocComponent.h" compile="0" resource="0" file="Components/DocComponent.h"/>
       <FILE id="ouLxbn" name="LogComponent.cpp" compile="1" resource="0"
             file="Components/LogComponent.cpp"/>
       <FILE id="DXcn1t" name="LogComponent.h" compile="0" resource="0" file="Components/LogComponent.h"/>

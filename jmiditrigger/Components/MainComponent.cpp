@@ -22,7 +22,7 @@
 
 #include "MainComponent.h"
 #include "LogComponent.h"
-#include "AboutComponent.h"
+#include "DocComponent.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
@@ -69,9 +69,9 @@ MainComponent::MainComponent (JMidiTriggerAudioProcessor& p)
     addAndMakeVisible (juce__tabbedComponent.get());
     juce__tabbedComponent->setTabBarDepth (30);
     juce__tabbedComponent->addTab (TRANS("Event Log"), juce::Colour (0x25030518), new LogComponent(), true);
-    juce__tabbedComponent->addTab (TRANS("Commands Reference"), juce::Colours::lightgrey, new AboutComponent(), true);
-    juce__tabbedComponent->addTab (TRANS("XML Example"), juce::Colours::lightgrey, 0, false);
-    juce__tabbedComponent->addTab (TRANS("About"), juce::Colours::lightgrey, 0, false);
+    juce__tabbedComponent->addTab (TRANS("Commands Reference"), juce::Colour (0x25030518), new DocComponent(), true);
+    juce__tabbedComponent->addTab (TRANS("XML Example"), juce::Colour (0x25030518), 0, false);
+    juce__tabbedComponent->addTab (TRANS("About"), juce::Colour (0x25030518), 0, false);
     juce__tabbedComponent->setCurrentTabIndex (0);
 
     juce__tabbedComponent->setBounds (16, 96, 576, 296);
@@ -245,11 +245,11 @@ BEGIN_JUCER_METADATA
                    tabBarDepth="30" initialTab="0">
     <TAB name="Event Log" colour="25030518" useJucerComp="1" contentClassName=""
          constructorParams="" jucerComponentFile="LogComponent.cpp"/>
-    <TAB name="Commands Reference" colour="ffd3d3d3" useJucerComp="1"
-         contentClassName="" constructorParams="" jucerComponentFile="AboutComponent.cpp"/>
-    <TAB name="XML Example" colour="ffd3d3d3" useJucerComp="1" contentClassName=""
+    <TAB name="Commands Reference" colour="25030518" useJucerComp="1"
+         contentClassName="" constructorParams="" jucerComponentFile="DocComponent.cpp"/>
+    <TAB name="XML Example" colour="25030518" useJucerComp="1" contentClassName=""
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="About" colour="ffd3d3d3" useJucerComp="1" contentClassName=""
+    <TAB name="About" colour="25030518" useJucerComp="1" contentClassName=""
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
 </JUCER_COMPONENT>
