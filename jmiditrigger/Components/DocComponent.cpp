@@ -64,7 +64,7 @@ DocComponent::DocComponent ()
     //[Constructor] You can add your own custom stuff here..
 
     XMLReader& xmlReader = XMLReader::getInstance();
-    docField->getTextValue().referTo(xmlReader.parser->documentation);
+    docField->getTextValue().referTo(xmlReader.documentation);
 
     //[/Constructor]
 }

@@ -17,9 +17,9 @@ XMLReader& XMLReader::getInstance()
 //==============================================================================
 XMLReader::XMLReader()
 {
-	DBG(">>>>>>>>>>>>>XMLReader::XMLReader" );
 	logger = StatusLog::getInstance();
 	parser = &XMLParser::getInstance();
+	documentation = "No config data loaded yet";
 }
 
 XMLReader::~XMLReader()
@@ -30,7 +30,6 @@ XMLReader::~XMLReader()
 bool XMLReader::loadXmlFile(const juce::File& fi)
 {
 	logger.log("Loading XML File " + fi.getFullPathName());
-	xmlReadyState = false;
 	if (!fi.exists())
 	{
 		logger.log("Error - file does not exist: " + fi.getFullPathName());
@@ -59,10 +58,16 @@ bool XMLReader::loadXmlFile(const juce::File& fi)
 				abortLoadXmlFile(); 
 				return false; 
 			};
-	 		xmlReadyState = true;
+
+			documentation = parser->generateXmlDocumentation();
 	 		return true;
 	 	}
 	}
+}
+
+bool XMLReader::isReady() {
+	if (!parser) return false;
+	return parser->xmlReadyState;
 }
 
 
@@ -84,7 +89,7 @@ bool XMLReader::loadXmlFile(const juce::String& filePath)
 
 void XMLReader::abortLoadXmlFile()
 {
-	xmlReadyState = false;
+	
 }
 
 bool XMLReader::reloadFile()

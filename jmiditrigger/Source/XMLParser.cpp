@@ -21,7 +21,6 @@ XMLParser::XMLParser()
 {
 	DBG(">>>>>>>>>>>>>XMLParser::XMLParser");
 	logger = StatusLog::getInstance();
-	documentation = "No config data loaded yet";
 }
 
 XMLParser::~XMLParser()
@@ -43,8 +42,6 @@ bool XMLParser::loadXmlData(pugi::xml_document* doc)
 	xmlListenersNode = xmlRootNode.child("listeners");
 	if (!xmlListenersNode) { DBG("Error: No XML <listeners> node found. "); return false; }
 	DBG("Debug: Selected listeners group node " + juce::String(xmlListenersNode.name()));
-
-	documentation = generateXmlDocumentation();
 
 	return true;
 }

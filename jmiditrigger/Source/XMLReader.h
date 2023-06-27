@@ -29,14 +29,14 @@ public:
     bool loadXmlFile(const juce::File& fi);
     void abortLoadXmlFile();
     bool reloadFile();
+    bool isReady();
 
     StatusLog logger;// = StatusLog::getInstance();
     XMLParser* parser;
 
     juce::Value xmlFilePath;
     pugi::xml_document xmlDoc;
-
-    bool xmlReadyState = false;
+    juce::Value documentation;
 
 
 private:

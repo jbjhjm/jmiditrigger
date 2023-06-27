@@ -42,8 +42,6 @@ public:
 
     StatusLog logger;// = StatusLog::getInstance();
 
-    juce::Value documentation;
-
     pugi::xml_document* xmlDoc;
     pugi::xml_node xmlRootNode;
     pugi::xml_node xmlEventsNode;
