@@ -13,7 +13,9 @@
 *.rc
 *.exp
 build
-Builds
+jmiditrigger/Builds/CodeBlocksWindows
+jmiditrigger/Builds/VisualStudio2022/x64
+jmiditrigger/Builds/VisualStudio2022/.vs
 alt
 Reaper
 Projucer/examples
