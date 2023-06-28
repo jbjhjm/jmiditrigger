@@ -7,6 +7,16 @@
 
   ==============================================================================
 */
+/**
+  Reminder on XML features
+  - <listener> listens to a certain kind of midi input (=targetNode)
+  - <midi> provides information for a midi output
+  - <event> groups a number of <midi> nodes and allow them to be referred to by <listener trigger="eventId">
+  - new in v2: <listener> may contain <midi> children, 
+    in this case these will generate output and check for triggered events will be skipped
+  - TODO: simple variables? e.g. $axe3channel?
+  - TODO: map input key/value to output - @value, @key
+  */
 
 #include "XMLParser.h"
 
@@ -36,8 +46,10 @@ bool XMLParser::loadXmlData(pugi::xml_document* doc)
 	DBG("Debug: Selected root node " + juce::String(xmlRootNode.name()));
 
 	xmlEventsNode = xmlRootNode.child("events");
-	if (!xmlEventsNode) { DBG("Error: No XML <events> node found. "); return false; }
+	//if (!xmlEventsNode) { DBG("Error: No XML <events> node found. "); return false; }
 	DBG("Debug: Selected events group node " + juce::String(xmlEventsNode.name()));
+
+	xmlVarsNode = xmlRootNode.child("variables");
 
 	xmlListenersNode = xmlRootNode.child("listeners");
 	if (!xmlListenersNode) { DBG("Error: No XML <listeners> node found. "); return false; }
@@ -69,14 +81,54 @@ pugi::xpath_node* XMLParser::findListenerNode(pugi::xpath_variable_set* params)
 	return &targetNode;
 }
 
-MidiUtils::MidiMessageInfo XMLParser::midiNodeToMidiMessageInfo(pugi::xml_node& midiNode)
+MidiUtils::MidiMessageAttributes XMLParser::getMidiMessageAttributes(pugi::xml_node& midiNode)
 {
-	MidiUtils::MidiMessageInfo info = {
+	MidiUtils::MidiMessageAttributes info = {
 		juce::String(midiNode.attribute("type").as_string()),
-		midiNode.attribute("channel").as_int(1),
-		midiNode.attribute("key").as_int(0),
-		midiNode.attribute("value").as_int(0)
+		juce::String(midiNode.attribute("channel").as_string()),
+		juce::String(midiNode.attribute("key").as_string()),
+		juce::String(midiNode.attribute("value").as_string())
 	};
+	return info;
+}
+
+MidiUtils::MidiMessageInfo XMLParser::midiNodeToMidiMessageInfo(pugi::xml_node & midiNode, MidiUtils::MidiMessageInfo & inputInfo)
+{
+	auto& midiNodeAttr = getMidiMessageAttributes(midiNode);
+
+	MidiUtils::MidiMessageInfo info = {
+		midiNodeAttr.type,
+		0,
+		0,
+		0
+	};
+
+	std::map<juce::String, int> data;
+	const pugi::char_t* keys[]{ "channel","key","value" };
+
+	for (auto& key : keys) {
+		auto strVal = MidiUtils::getPropFromMidiNodeAttributes(key, midiNodeAttr);
+		bool isVar_dollar = strVal.startsWithChar(char("$"));
+		bool isVar_at = strVal.startsWithChar(char("@"));
+		if (isVar_dollar || isVar_at) {
+			auto varName = strVal.substring(1);
+			int value;
+			if (isVar_dollar) {
+				throw std::exception("Variables are not implemented yet");
+				auto varNode = xmlVarsNode.child(varName.getCharPointer());
+				value = varNode.attribute("value").as_int();
+			}
+			else 
+			{
+				value = MidiUtils::getPropFromMidiMessageInfo(varName, inputInfo);
+			}
+			data[key] = value;
+		}
+		else 
+		{
+			data[key] = strVal.getIntValue();
+		}
+	}
 
 	return info;
 }
@@ -107,26 +159,20 @@ XmlEventInfo* XMLParser::getEventInfoFromXml(pugi::string_t eventId)
 	}
 }
 
-bool XMLParser::handleMidiEvent(int channel, int key, juce::String type, juce::MidiBuffer & midiOutput)
-{	
-	/**
-	  Reminder: we are searching for
-	  - a listener (=targetNode)
-	  - that contains IDs pointing to one or multiple events by ID
-	  - each of those events can contain multiple instructions on to-be-sent data.
-	  */
-	  // [@type=string(type) or @type=all]
-	  //pugi::xpath_query midiListenerQuery(listenerQuery);
+bool XMLParser::handleMidiEvent(MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer & midiOutput)
+{
+	// [@type=string(type) or @type=all]
+	//pugi::xpath_query midiListenerQuery(listenerQuery);
 
-	pugi::xpath_variable_set params = createListenerQueryParams(channel, key, type);
+	pugi::xpath_variable_set params = createListenerQueryParams(inputInfo.channel, inputInfo.key, inputInfo.type);
 	pugi::xpath_node* targetNode = findListenerNode(&params);
 
 	if (targetNode) {
-		if (type == "noteoff" && targetNode->node().attribute("type").as_string() == "all") {
+		if (inputInfo.type == "noteoff" && targetNode->node().attribute("type").as_string() == "all") {
 			// special case: skip handling of noteoff midi event for type "all" listeners
 			return true;
 		}
-		return sendResponseForMidiEvent(targetNode, midiOutput);
+		return sendResponseForMidiEvent(targetNode, inputInfo, midiOutput);
 	}
 	else 
 	{
@@ -134,7 +180,7 @@ bool XMLParser::handleMidiEvent(int channel, int key, juce::String type, juce::M
 	}
 }
 
-bool XMLParser::sendResponseForMidiEvent(pugi::xpath_node* targetNode, juce::MidiBuffer& midiOutput) {
+bool XMLParser::sendResponseForMidiEvent(pugi::xpath_node* targetNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput) {
 	
 	logger.debug("send response as defined in found midi event: " + String(targetNode->node().name()));
 	pugi::xml_node eventNode;
@@ -151,7 +197,7 @@ bool XMLParser::sendResponseForMidiEvent(pugi::xpath_node* targetNode, juce::Mid
 		for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
 			sortIndex++;
 			foundAnyData = true;
-			generateOutputFromMidiNode(midiNode, midiOutput, sortIndex);
+			generateOutputFromMidiNode(midiNode, inputInfo, midiOutput, sortIndex);
 		}
 	}
 	else if(!eventIds.isEmpty())
@@ -165,7 +211,7 @@ bool XMLParser::sendResponseForMidiEvent(pugi::xpath_node* targetNode, juce::Mid
 				for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
 					sortIndex++;
 					foundAnyData = true;
-					generateOutputFromMidiNode(midiNode, midiOutput, sortIndex);
+					generateOutputFromMidiNode(midiNode, inputInfo, midiOutput, sortIndex);
 				}
 			}
 		}
@@ -178,9 +224,9 @@ bool XMLParser::sendResponseForMidiEvent(pugi::xpath_node* targetNode, juce::Mid
 	return foundAnyData;
 }
 
-void XMLParser::generateOutputFromMidiNode(pugi::xml_node& midiNode, juce::MidiBuffer& midiOutput, int midiEventIndex)
+void XMLParser::generateOutputFromMidiNode(pugi::xml_node& midiNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput, int midiEventIndex)
 {
-	MidiUtils::MidiMessageInfo info = midiNodeToMidiMessageInfo(midiNode);
+	MidiUtils::MidiMessageInfo info = midiNodeToMidiMessageInfo(midiNode, inputInfo);
 	logger.debug("Send midi " + String(info.type) + " @Ch " + String(info.channel) + " " + String(info.key) + "," + String(info.value));
 	MidiMessage outMidiMsg = MidiUtils::createMidiMessage(info);
 	midiOutput.addEvent(outMidiMsg, midiEventIndex);
@@ -207,6 +253,20 @@ juce::Array<pugi::string_t> XMLParser::getEventIdsForListener(const pugi::xml_no
 	return EventIds;
 }
 
+int XMLParser::countNodeChildren(pugi::xml_node& node, const char * name = "")
+{
+	if (name != "")
+	{
+		auto& childIterator = node.children(name);
+		return std::distance(childIterator.begin(), childIterator.end());
+	}
+	else
+	{
+		auto& childIterator = node.children(name);
+		return std::distance(childIterator.begin(), childIterator.end());
+	}
+}
+
 juce::String XMLParser::generateXmlDocumentation()
 {
 	if (!xmlRootNode) return "no configuration loaded, aborting doc generation";
@@ -222,34 +282,42 @@ juce::String XMLParser::generateXmlDocumentation()
 	for (pugi::xml_node listenerNode = xmlListenersNode.child("listener"); listenerNode; listenerNode = listenerNode.next_sibling("listener")) {
 		DBG("Debug: Found a listener node");
 
-		MidiUtils::MidiMessageInfo info = midiNodeToMidiMessageInfo(listenerNode);
+		MidiUtils::MidiMessageAttributes info = getMidiMessageAttributes(listenerNode);
 
 		doc +=
 			"Listener at Channel "
 			+ juce::String(info.channel) +
-			" " + info.type +
-			" [ " + juce::String(info.key) + " " + juce::String(info.value) + " ] " +
+			" [type=" + info.type +
+			"] [ " + juce::String(info.key) + " " + juce::String(info.value) + " ] " +
 			" ";
 
-		eventIds = getEventIdsForListener(&listenerNode);
-		if (eventIds.size() == 0) {
-			doc += "\t Listener triggers nothing \n";
+		if (!listenerNode.children("midi").empty()) {
+			const int count = countNodeChildren(listenerNode, "midi");
+			doc += "\t Listener executes "+(juce::String(count)) + " midi children \n";
 		}
-		else
+		else 
 		{
-			//doc += "\tListener has " + String(eventIds.size()) + " triggers assigned. \n";
-			if (eventIds.size() > 1) {
-				doc += "\n";
+			// search and list event
+			eventIds = getEventIdsForListener(&listenerNode);
+			if (eventIds.size() == 0) {
+				doc += "\t Listener triggers nothing \n";
 			}
-			for (int i = 0; i < eventIds.size(); i++) {
-				XmlEventInfo* eventInfo = getEventInfoFromXml(eventIds[i]);
-
-				if (eventInfo) {
-					DBG(eventInfo->name);
-					doc += "\tEvent #" + juce::String(i + 1) + " - " + eventInfo->name + "\n";
+			else
+			{
+				doc += "\tListener calls event(s): ";
+				if (eventIds.size() > 1) {
+					doc += "\n";
 				}
-				else {
-					doc += "\tEvent Node '" + juce::String(eventIds[i].c_str()) + "' not found. \n";
+				for (int i = 0; i < eventIds.size(); i++) {
+					XmlEventInfo* eventInfo = getEventInfoFromXml(eventIds[i]);
+
+					if (eventInfo) {
+						DBG(eventInfo->name);
+						doc += "\t" + juce::String(i + 1) + " - " + eventInfo->name + "\n";
+					}
+					else {
+						doc += "\tEvent #'" + juce::String(eventIds[i].c_str()) + "' not found. \n";
+					}
 				}
 			}
 		}

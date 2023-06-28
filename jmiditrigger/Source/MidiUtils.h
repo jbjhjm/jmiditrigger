@@ -16,6 +16,13 @@
 
 namespace MidiUtils {
 
+	struct MidiMessageAttributes {
+		juce::String type;
+		juce::String channel;
+		juce::String key;
+		juce::String value;
+	};
+
 	struct MidiMessageInfo {
 		juce::String type;
 		int channel;
@@ -24,6 +31,8 @@ namespace MidiUtils {
 	};
 
 	juce::MidiMessage createMidiMessage(MidiMessageInfo info);
+	juce::String getPropFromMidiNodeAttributes(juce::String varName, MidiMessageAttributes attr);
+	int getPropFromMidiMessageInfo(juce::String varName, MidiMessageInfo info);
 
 
 }

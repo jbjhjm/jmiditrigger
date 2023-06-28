@@ -234,30 +234,34 @@ auto JMidiTriggerAudioProcessor::getMidiMessageTypeAndKey(const juce::MidiMessag
 	juce::String type = "";
 	int channel = 0;
 	int key = 0;
+    int value = 0;
 
 	if (message.isNoteOn())
 	{
 		type = "noteon";
 		key = message.getNoteNumber();
+        value = message.getVelocity();
 	}
 	else if (message.isNoteOff())
 	{
 		type = "noteoff";
 		key = message.getNoteNumber();
-	}
+        value = message.getVelocity();
+    }
 	else if (message.isController())
 	{
 		type = "cc";
 		key = message.getControllerNumber();
-	}
+        value = message.getControllerValue();
+    }
 	else if (message.isProgramChange())
 	{
 		type = "pc";
 		key = message.getProgramChangeNumber();
 	}
 
-	struct result { juce::String type; int key; };
-	return result{ type, key };
+    struct result { juce::String type; int key; int value; };
+	return result{ type, key, value };
 
 }
 
@@ -269,13 +273,20 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const juce::MidiMessage
 	//<listener channel = "2" type = "cc" key = "11" >
 	//const MidiMessage m = MidiMessage::noteOn(message.getChannel(), message.getNoteNumber(), newVel);
 
-	auto [type, key] = getMidiMessageTypeAndKey(message);
+	auto [type, key, value] = getMidiMessageTypeAndKey(message);
 	int channel = message.getChannel();
 
 	bool foundAnyData = false;
 
+    MidiUtils::MidiMessageInfo inputInfo {
+        type,
+        channel,
+        key,
+        value
+    };
+
 	XMLReader& xmlReader = XMLReader::getInstance();
-    return xmlReader.parser->handleMidiEvent(channel, key, type, midiOutput);
+    return xmlReader.parser->handleMidiEvent(inputInfo, midiOutput);
 }
 
 

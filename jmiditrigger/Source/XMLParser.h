@@ -29,24 +29,27 @@ public:
     ~XMLParser();
 
     bool loadXmlData(pugi::xml_document* doc);
-    MidiUtils::MidiMessageInfo midiNodeToMidiMessageInfo(pugi::xml_node& midiNode);
+    MidiUtils::MidiMessageAttributes getMidiMessageAttributes(pugi::xml_node& midiNode);
+    MidiUtils::MidiMessageInfo midiNodeToMidiMessageInfo(pugi::xml_node& midiNode, MidiUtils::MidiMessageInfo& inputInfo);
     pugi::xml_node getEventNode(pugi::string_t eventId);
     XmlEventInfo* getEventInfoFromXml(pugi::string_t eventId);
     juce::Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
     juce::String generateXmlDocumentation();
 
     pugi::xpath_node* findListenerNode(pugi::xpath_variable_set* params);
+    int countNodeChildren(pugi::xml_node& node, const char * name);
 
     pugi::xpath_variable_set createListenerQueryParams(int channel, int key, juce::String type);
-    bool handleMidiEvent(int channel, int key, juce::String type, juce::MidiBuffer& midiOutput);
-    bool sendResponseForMidiEvent(pugi::xpath_node* targetNode, juce::MidiBuffer& midiOutput);
-    void generateOutputFromMidiNode(pugi::xml_node& midiNode, juce::MidiBuffer& midiOutput, int midiEventIndex);
+    bool handleMidiEvent(MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput);
+    bool sendResponseForMidiEvent(pugi::xpath_node* targetNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput);
+    void generateOutputFromMidiNode(pugi::xml_node& midiNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput, int midiEventIndex);
 
     StatusLog logger;// = StatusLog::getInstance();
 
     pugi::xml_document* xmlDoc;
     pugi::xml_node xmlRootNode;
     pugi::xml_node xmlEventsNode;
+    pugi::xml_node xmlVarsNode;
     pugi::xml_node xmlListenersNode;
     bool xmlReadyState = false;
 
