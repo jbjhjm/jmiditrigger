@@ -54,7 +54,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<juce::TextEditor> juce__textEditor;
     std::unique_ptr<juce::TextEditor> docField;
 
 

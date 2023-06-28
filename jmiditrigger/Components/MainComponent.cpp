@@ -23,6 +23,8 @@
 #include "MainComponent.h"
 #include "LogComponent.h"
 #include "DocComponent.h"
+#include "DemoComponent.h"
+#include "AboutComponent.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
@@ -70,8 +72,8 @@ MainComponent::MainComponent (JMidiTriggerAudioProcessor& p)
     juce__tabbedComponent->setTabBarDepth (30);
     juce__tabbedComponent->addTab (TRANS("Event Log"), juce::Colour (0x25030518), new LogComponent(), true);
     juce__tabbedComponent->addTab (TRANS("Commands Reference"), juce::Colour (0x25030518), new DocComponent(), true);
-    juce__tabbedComponent->addTab (TRANS("XML Example"), juce::Colour (0x25030518), 0, false);
-    juce__tabbedComponent->addTab (TRANS("About"), juce::Colour (0x25030518), 0, false);
+    juce__tabbedComponent->addTab (TRANS("XML Example"), juce::Colour (0x25030518), new DemoComponent(), true);
+    juce__tabbedComponent->addTab (TRANS("About"), juce::Colour (0x25030518), new AboutComponent(), true);
     juce__tabbedComponent->setCurrentTabIndex (0);
 
     juce__tabbedComponent->setBounds (16, 96, 576, 296);
@@ -248,9 +250,9 @@ BEGIN_JUCER_METADATA
     <TAB name="Commands Reference" colour="25030518" useJucerComp="1"
          contentClassName="" constructorParams="" jucerComponentFile="DocComponent.cpp"/>
     <TAB name="XML Example" colour="25030518" useJucerComp="1" contentClassName=""
-         constructorParams="" jucerComponentFile=""/>
+         constructorParams="" jucerComponentFile="DemoComponent.cpp"/>
     <TAB name="About" colour="25030518" useJucerComp="1" contentClassName=""
-         constructorParams="" jucerComponentFile=""/>
+         constructorParams="" jucerComponentFile="AboutComponent.cpp"/>
   </TABBEDCOMPONENT>
 </JUCER_COMPONENT>
 

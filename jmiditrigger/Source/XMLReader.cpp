@@ -20,6 +20,7 @@ XMLReader::XMLReader():
 	parser (&XMLParser::getInstance())
 {
 	documentation = "No config data loaded yet";
+	xmlFilePath = "";
 }
 
 XMLReader::~XMLReader()
@@ -32,26 +33,26 @@ bool XMLReader::loadXmlFile(const juce::File& fi)
 	logger.log("Loading XML File " + fi.getFullPathName());
 	if (!fi.exists())
 	{
-		logger.log("Error - file does not exist: " + fi.getFullPathName());
+		logger.log("Error - file does not exist: " + fi.getFullPathName(),1);
 		xmlFilePath = "";
 		return abortLoadXmlFile();
 	}
 	else
 	{
 	 	xmlFilePath = fi.getRelativePathFrom(juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile).getParentDirectory());
-	 	logger.debug("debug: rel xmlFilePath = " + xmlFilePath.getValue().toString());
+	 	logger.log("relative path to config file: " + xmlFilePath.getValue().toString(),1);
 	 	//setStateValue(Identifier("xmlFilePath"), xmlFilePath.getValue().toString());
 	 	//debug("after setstatevalue");
 
 	 	pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(fi.getFullPathName().toRawUTF8());
 
 	 	if (xmlReadSuccess == false) {
-	 		logger.log("Error while reading XML file: " + juce::String(xmlReadSuccess.description()));
+	 		logger.log("Error while reading file: " + juce::String(xmlReadSuccess.description()),1);
 			return abortLoadXmlFile();
 		}
 	 	else 
 		{
-	 		logger.log("Successfully parsed file: " + xmlFilePath.toString());
+	 		logger.log("Successfully parsed file." ,1);
 	 		if (!parser->loadXmlData(&xmlDoc)) { 
 				return abortLoadXmlFile();
 			};
@@ -70,18 +71,16 @@ bool XMLReader::isReady() {
 
 bool XMLReader::loadXmlFile(const juce::String& filePath)
 {
+	const auto currentDir = juce::File::getSpecialLocation(
+		juce::File::SpecialLocationType::currentApplicationFile
+	).getParentDirectory();
+
 	// File(filePath) is only allowed for absolute paths!
-	logger.debug("load xml file from rel string:" + juce::String(
-		juce::File::getSpecialLocation(
-			juce::File::SpecialLocationType::currentApplicationFile
-		).getParentDirectory()
-		 .getFullPathName()
-	) + ", " + filePath);
-	return this->loadXmlFile(
-		juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile)
-			.getParentDirectory()
-			.getChildFile(filePath)
-	);
+	logger.debug("load xml file (baseDir, relPath):", 1);
+	logger.debug(juce::String(currentDir.getFullPathName()), 2);
+	logger.debug(filePath, 2);
+		
+	return this->loadXmlFile(currentDir.getChildFile(filePath));
 }
 
 bool XMLReader::abortLoadXmlFile()
@@ -98,7 +97,8 @@ bool XMLReader::completeLoadXmlFile()
 
 bool XMLReader::reloadFile()
 {
-	if (!xmlFilePath.getValue()) {
+	const auto filePath = xmlFilePath.getValue().toString();
+	if (filePath == "") {
 		logger.log("No config file is selected, cannot reload.");
 		return false;
 	}

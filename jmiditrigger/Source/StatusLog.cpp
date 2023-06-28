@@ -17,7 +17,7 @@ juce::String makeIndentation(int indent)
 	juce::String out = "";
 	for (int repeat = 0; repeat < indent; repeat++)
 	{
-		out += "\t";
+		out += "    ";
 	}
 	return out;
 }

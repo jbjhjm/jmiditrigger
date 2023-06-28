@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="W1FDz5" name="jmiditrigger" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="W1FDz5" name="jmiditrigger2" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="sector" companyWebsite="www.sector.band" pluginFormats="buildStandalone,buildVST3"
               pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
-              pluginManufacturerCode="sctr" pluginCode="jmtr">
-  <MAINGROUP id="nIXnNl" name="jmiditrigger">
+              pluginManufacturerCode="sctr" pluginCode="jmt2">
+  <MAINGROUP id="nIXnNl" name="jmiditrigger2">
     <GROUP id="{970AD132-6F86-BBE3-C62B-7DF6194751E9}" name="Components">
       <FILE id="jVjDY6" name="DocComponent.cpp" compile="1" resource="0"
             file="Components/DocComponent.cpp"/>
       <FILE id="VufEyO" name="DocComponent.h" compile="0" resource="0" file="Components/DocComponent.h"/>
+      <FILE id="oLxKtI" name="DemoComponent.cpp" compile="1" resource="0"
+            file="Components/DemoComponent.cpp"/>
+      <FILE id="Xx1k5m" name="DemoComponent.h" compile="0" resource="0" file="Components/DemoComponent.h"/>
       <FILE id="ouLxbn" name="LogComponent.cpp" compile="1" resource="0"
             file="Components/LogComponent.cpp"/>
       <FILE id="DXcn1t" name="LogComponent.h" compile="0" resource="0" file="Components/LogComponent.h"/>
@@ -70,8 +73,8 @@
     </CODEBLOCKS_WINDOWS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="NewProject"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="NewProject"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="jmiditrigger2"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="jmiditrigger2"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../Projucer/modules"/>

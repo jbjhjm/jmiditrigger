@@ -109,13 +109,12 @@ MidiUtils::MidiMessageInfo XMLParser::midiNodeToMidiMessageInfo(pugi::xml_node &
 
 	for (auto& key : keys) {
 		juce::String strVal = MidiUtils::getPropFromMidiNodeAttributes(key, midiNodeAttr);
-		bool isVar_dollar = strVal.startsWithChar(char("$"));
-		bool isVar_at = strVal.startsWithChar(char("@"));
+		bool isVar_dollar = strVal.startsWith("$");
+		bool isVar_at = strVal.startsWith("@");
 		int value;
 		if (isVar_dollar || isVar_at) {
 			auto varName = strVal.substring(1);
 			if (isVar_dollar) {
-				throw std::exception("Variables are not implemented yet");
 				auto varNode = xmlVarsNode.child(varName.getCharPointer());
 				value = varNode.attribute("value").as_int();
 			}
@@ -169,11 +168,14 @@ bool XMLParser::handleMidiEvent(MidiUtils::MidiMessageInfo& inputInfo, juce::Mid
 	pugi::xml_node listenerNode = findListenerNode(&params);
 	const bool listenerFound = listenerNode && listenerNode.name() != "";
 
-	logger.log("search listener for type=" + inputInfo.type 
-		+ " channel=" + juce::String(inputInfo.channel) 
-		+ " key=" + juce::String(inputInfo.key)
-		+ (listenerFound ? " -- found" : " -- no match")
-	, 1);
+	if (inputInfo.type == "noteon" || listenerFound) {
+		// skip log for noteoff events as these are considered optional
+		logger.log("search listener for type=" + inputInfo.type 
+			+ " channel=" + juce::String(inputInfo.channel) 
+			+ " key=" + juce::String(inputInfo.key)
+			+ (listenerFound ? " -- found" : " -- no match")
+		, 1);
+	}
 
 	if (listenerFound) {
 		if (inputInfo.type == "noteoff" && listenerNode.attribute("type").as_string() == "all") {
@@ -216,14 +218,18 @@ bool XMLParser::sendResponseForMidiEvent(pugi::xml_node& listenerNode, MidiUtils
 		// handle midi nodes stored in events
 		for (int i = 0; i < eventIds.size(); i++) {
 			eventNode = getEventNode(eventIds[i]);
-			logger.log("Listener trigger #" + String(i + 1) + ": " + String(eventIds[i].c_str()) + " node found: " + String(eventNode.name()), 1);
 			if (eventNode) {
+				logger.log("Listener trigger #" + String(i + 1) + ": " + String(eventIds[i].c_str()) + " event node found. " , 1);
 				midiNode = eventNode.child("midi");
 				for (midiNode; midiNode; midiNode = midiNode.next_sibling("midi")) {
 					sortIndex++;
 					foundAnyData = true;
 					generateOutputFromMidiNode(midiNode, inputInfo, midiOutput, sortIndex);
 				}
+			}
+			else
+			{
+				logger.log("Listener trigger #" + String(i + 1) + ": " + String(eventIds[i].c_str()) + " -- missing event" , 1);
 			}
 		}
 	}

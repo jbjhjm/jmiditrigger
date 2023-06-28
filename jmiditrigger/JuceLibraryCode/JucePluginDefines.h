@@ -41,10 +41,10 @@
  #define JucePlugin_Enable_ARA             0
 #endif
 #ifndef  JucePlugin_Name
- #define JucePlugin_Name                   "jmiditrigger"
+ #define JucePlugin_Name                   "jmiditrigger2"
 #endif
 #ifndef  JucePlugin_Desc
- #define JucePlugin_Desc                   "jmiditrigger"
+ #define JucePlugin_Desc                   "jmiditrigger2"
 #endif
 #ifndef  JucePlugin_Manufacturer
  #define JucePlugin_Manufacturer           "sector"
@@ -59,7 +59,7 @@
  #define JucePlugin_ManufacturerCode       0x73637472
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x6a6d7472
+ #define JucePlugin_PluginCode             0x6a6d7432
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                0
@@ -101,19 +101,19 @@
  #define JucePlugin_AUSubType              JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_AUExportPrefix
- #define JucePlugin_AUExportPrefix         jmiditriggerAU
+ #define JucePlugin_AUExportPrefix         jmiditrigger2AU
 #endif
 #ifndef  JucePlugin_AUExportPrefixQuoted
- #define JucePlugin_AUExportPrefixQuoted   "jmiditriggerAU"
+ #define JucePlugin_AUExportPrefixQuoted   "jmiditrigger2AU"
 #endif
 #ifndef  JucePlugin_AUManufacturerCode
  #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
 #endif
 #ifndef  JucePlugin_CFBundleIdentifier
- #define JucePlugin_CFBundleIdentifier     com.sector.jmiditrigger
+ #define JucePlugin_CFBundleIdentifier     com.sector.jmiditrigger2
 #endif
 #ifndef  JucePlugin_AAXIdentifier
- #define JucePlugin_AAXIdentifier          com.sector.jmiditrigger
+ #define JucePlugin_AAXIdentifier          com.sector.jmiditrigger2
 #endif
 #ifndef  JucePlugin_AAXManufacturerCode
  #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode
@@ -137,7 +137,7 @@
  #define JucePlugin_IAASubType             JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_IAAName
- #define JucePlugin_IAAName                "sector: jmiditrigger"
+ #define JucePlugin_IAAName                "sector: jmiditrigger2"
 #endif
 #ifndef  JucePlugin_VSTNumMidiInputs
  #define JucePlugin_VSTNumMidiInputs       16
@@ -152,10 +152,10 @@
  #define JucePlugin_ARATransformationFlags  0
 #endif
 #ifndef  JucePlugin_ARAFactoryID
- #define JucePlugin_ARAFactoryID           "com.sector.jmiditrigger.factory"
+ #define JucePlugin_ARAFactoryID           "com.sector.jmiditrigger2.factory"
 #endif
 #ifndef  JucePlugin_ARADocumentArchiveID
- #define JucePlugin_ARADocumentArchiveID   "com.sector.jmiditrigger.aradocumentarchive.1.0.0"
+ #define JucePlugin_ARADocumentArchiveID   "com.sector.jmiditrigger2.aradocumentarchive.1.0.0"
 #endif
 #ifndef  JucePlugin_ARACompatibleArchiveIDs
  #define JucePlugin_ARACompatibleArchiveIDs  ""

@@ -45,6 +45,8 @@ AboutComponent::AboutComponent ()
 
 
     //[UserPreSize]
+    juce__textEditor->setFont(juce::Font{"Consolas", 14.f, 0});
+    juce__textEditor->setLineSpacing(1.4f);
     //[/UserPreSize]
 
     setSize (600, 400);

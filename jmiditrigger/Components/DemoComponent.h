@@ -33,41 +33,32 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class LogComponent  : public juce::Component,
-                      public juce::ValueTree::Listener,
-                      private juce::AsyncUpdater,
-                      public juce::Button::Listener
+class DemoComponent  : public juce::Component
 {
 public:
     //==============================================================================
-    LogComponent ();
-    ~LogComponent() override;
+    DemoComponent ();
+    ~DemoComponent() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    juce::ValueTree logState;           // This is a valid node, of type "MyNode"
-    void handleAsyncUpdate() override;
-    void valueTreePropertyChanged(juce::ValueTree& v, const juce::Identifier& id) override;
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;
     void resized() override;
-    void buttonClicked (juce::Button* buttonThatWasClicked) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<juce::TextEditor> juce__textEditor;
-    std::unique_ptr<juce::TextButton> clearButton;
+    std::unique_ptr<juce::TextEditor> DemoField;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LogComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DemoComponent)
 };
 
 //[EndFile] You can add extra defines here...

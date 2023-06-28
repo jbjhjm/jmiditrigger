@@ -14,10 +14,10 @@ namespace MidiUtils {
 		juce::MidiMessage outMidiMsg;
 
 		if (info.type == "noteon") {
-			outMidiMsg = juce::MidiMessage::noteOn(info.channel, info.key, float(info.value));
+			outMidiMsg = juce::MidiMessage::noteOn(info.channel, info.key, float(info.value) / 127.f); // float - 0 < velocity < 1
 		}
 		else if (info.type == "noteoff") {
-			outMidiMsg = juce::MidiMessage::noteOff(info.channel, info.key, float(info.value));
+			outMidiMsg = juce::MidiMessage::noteOff(info.channel, info.key, float(info.value) / 127.f);
 		}
 		else if (info.type == "cc") {
 			outMidiMsg = juce::MidiMessage::controllerEvent(info.channel, info.key, info.value);

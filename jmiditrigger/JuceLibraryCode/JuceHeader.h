@@ -40,7 +40,7 @@
 #if ! JUCE_DONT_DECLARE_PROJECTINFO
 namespace ProjectInfo
 {
-    const char* const  projectName    = "jmiditrigger";
+    const char* const  projectName    = "jmiditrigger2";
     const char* const  companyName    = "sector";
     const char* const  versionString  = "1.0.0";
     const int          versionNumber  = 0x10000;

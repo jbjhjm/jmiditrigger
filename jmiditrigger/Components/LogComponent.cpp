@@ -47,10 +47,17 @@ LogComponent::LogComponent ()
     juce__textEditor->setCaretVisible (false);
     juce__textEditor->setPopupMenuEnabled (true);
     juce__textEditor->setText (juce::String());
-    juce__textEditor->scrollDown();
+
+    clearButton.reset (new juce::TextButton ("clearButton"));
+    addAndMakeVisible (clearButton.get());
+    clearButton->setButtonText (TRANS("X clear"));
+    clearButton->addListener (this);
+    clearButton->setColour (juce::TextButton::buttonColourId, juce::Colour (0xff2a2a2a));
 
 
     //[UserPreSize]
+    juce__textEditor->applyFontToAllText(juce::Font{"Consolas", 14.f, 0});
+    juce__textEditor->setLineSpacing(1.4f);
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -66,6 +73,7 @@ LogComponent::~LogComponent()
     //[/Destructor_pre]
 
     juce__textEditor = nullptr;
+    clearButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -90,8 +98,26 @@ void LogComponent::resized()
     //[/UserPreResize]
 
     juce__textEditor->setBounds (0, 0, proportionOfWidth (1.0000f), proportionOfHeight (1.0000f));
+    clearButton->setBounds (getWidth() - 85, 15, 70, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
+}
+
+void LogComponent::buttonClicked (juce::Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == clearButton.get())
+    {
+        //[UserButtonCode_clearButton] -- add your button handler code here..
+        auto& logState = Store::getState(STATES::Log);
+        logState.setProperty(PROPS::LogData, "", nullptr);
+        //[/UserButtonCode_clearButton]
+    }
+
+    //[UserbuttonClicked_Post]
+    //[/UserbuttonClicked_Post]
 }
 
 
@@ -152,6 +178,9 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="0 0 100% 100%" initialText=""
               multiline="1" retKeyStartsLine="1" readonly="1" scrollbars="1"
               caret="0" popupmenu="1"/>
+  <TEXTBUTTON name="clearButton" id="7602d80f8b4fa372" memberName="clearButton"
+              virtualName="" explicitFocusOrder="0" pos="85R 15 70 24" bgColOff="ff2a2a2a"
+              buttonText="X clear" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
