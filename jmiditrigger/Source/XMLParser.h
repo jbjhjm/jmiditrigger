@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "StatusLog.cpp"
+#include "StatusLog.h"
 #include "MidiUtils.h"
 #include "../libraries/pugixml.hpp" 
 
@@ -36,12 +36,12 @@ public:
     juce::Array<pugi::string_t> getEventIdsForListener(const pugi::xml_node* listenerNode);
     juce::String generateXmlDocumentation();
 
-    pugi::xpath_node* findListenerNode(pugi::xpath_variable_set* params);
+    pugi::xml_node findListenerNode(pugi::xpath_variable_set* params);
     int countNodeChildren(pugi::xml_node& node, const char * name);
 
     pugi::xpath_variable_set createListenerQueryParams(int channel, int key, juce::String type);
     bool handleMidiEvent(MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput);
-    bool sendResponseForMidiEvent(pugi::xpath_node* targetNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput);
+    bool sendResponseForMidiEvent(pugi::xml_node& listenerNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput);
     void generateOutputFromMidiNode(pugi::xml_node& midiNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput, int midiEventIndex);
 
     StatusLog logger;// = StatusLog::getInstance();

@@ -29,13 +29,15 @@ namespace MidiUtils {
 		return outMidiMsg;
 	}
 
-	juce::String getPropFromMidiNodeAttributes(juce::String varName, MidiMessageAttributes attr)
+	juce::String getPropFromMidiNodeAttributes(juce::String varName, MidiMessageAttributes& attr)
 	{
-		if (varName == "value") { return attr.value; }
-		else if (varName == "channel") { return attr.channel; }
-		else if (varName == "key") { return attr.key; }
-		else if (varName == "type") { return attr.type; }
+		juce::String result;
+		if (varName == "value") { result = attr.value; }
+		else if (varName == "channel") { result = attr.channel; }
+		else if (varName == "key") { result = attr.key; }
+		else if (varName == "type") { result = attr.type; }
 		else { throw std::exception("Unknown reference requested "); }
+		return result;
 	}
 
 	int getPropFromMidiMessageInfo(juce::String varName, MidiMessageInfo info)
@@ -44,6 +46,15 @@ namespace MidiUtils {
 		else if (varName == "channel") { return info.channel; }
 		else if (varName == "key") { return info.key; }
 		else if (varName == "type") { throw std::exception("getPropFromMidiMessageInfo cannot be used to get type! (only int props supported)"); }
+		else { throw std::exception("Unknown reference requested "); }
+	}
+
+	void setPropInMidiMessageInfo(juce::String varName, int value, MidiMessageInfo& info)
+	{
+		if (varName == "value") { info.value = value; }
+		else if (varName == "channel") { info.channel = value; }
+		else if (varName == "key") { info.key = value; }
+		else if (varName == "type") { throw std::exception("getPropFromMidiMessageInfo cannot be used to set type! (only int props supported)"); }
 		else { throw std::exception("Unknown reference requested "); }
 	}
 

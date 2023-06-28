@@ -273,6 +273,12 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const juce::MidiMessage
 	//<listener channel = "2" type = "cc" key = "11" >
 	//const MidiMessage m = MidiMessage::noteOn(message.getChannel(), message.getNoteNumber(), newVel);
 
+    XMLReader& xmlReader = XMLReader::getInstance();
+    if (!xmlReader.isReady()) {
+        logger.log("Error: No configuration is loaded!",1);
+        return false;
+    }
+
 	auto [type, key, value] = getMidiMessageTypeAndKey(message);
 	int channel = message.getChannel();
 
@@ -285,7 +291,6 @@ bool JMidiTriggerAudioProcessor::processMidiInputMessage(const juce::MidiMessage
         value
     };
 
-	XMLReader& xmlReader = XMLReader::getInstance();
     return xmlReader.parser->handleMidiEvent(inputInfo, midiOutput);
 }
 

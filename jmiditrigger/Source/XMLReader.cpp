@@ -34,8 +34,7 @@ bool XMLReader::loadXmlFile(const juce::File& fi)
 	{
 		logger.log("Error - file does not exist: " + fi.getFullPathName());
 		xmlFilePath = "";
-		abortLoadXmlFile();
-		return false;
+		return abortLoadXmlFile();
 	}
 	else
 	{
@@ -48,20 +47,18 @@ bool XMLReader::loadXmlFile(const juce::File& fi)
 
 	 	if (xmlReadSuccess == false) {
 	 		logger.log("Error while reading XML file: " + juce::String(xmlReadSuccess.description()));
-	 		abortLoadXmlFile();
-	 		return false;
-	 	}
+			return abortLoadXmlFile();
+		}
 	 	else 
 		{
 	 		logger.log("Successfully parsed file: " + xmlFilePath.toString());
 	 		if (!parser->loadXmlData(&xmlDoc)) { 
-				abortLoadXmlFile(); 
-				return false; 
+				return abortLoadXmlFile();
 			};
 
 			documentation = parser->generateXmlDocumentation();
-	 		return true;
-	 	}
+			return completeLoadXmlFile();
+		}
 	}
 }
 
@@ -87,9 +84,16 @@ bool XMLReader::loadXmlFile(const juce::String& filePath)
 	);
 }
 
-void XMLReader::abortLoadXmlFile()
+bool XMLReader::abortLoadXmlFile()
 {
-	
+	//xmlReadyState = false;
+	return false;
+}
+
+bool XMLReader::completeLoadXmlFile()
+{
+	//xmlReadyState = true;
+	return true;
 }
 
 bool XMLReader::reloadFile()

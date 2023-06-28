@@ -47,6 +47,7 @@ LogComponent::LogComponent ()
     juce__textEditor->setCaretVisible (false);
     juce__textEditor->setPopupMenuEnabled (true);
     juce__textEditor->setText (juce::String());
+    juce__textEditor->scrollDown();
 
 
     //[UserPreSize]
@@ -113,8 +114,11 @@ void LogComponent::handleAsyncUpdate()
     DBG("HandleAsyncUpdate");
     juce::String newContent = logState.getProperty(PROPS::LogData);
     juce__textEditor->setText(newContent);
+    juce__textEditor->moveCaretToEnd();
     //juce__textEditor->insertTextAtCaret(newContent);
-   // juce__textEditor->scrollDown();
+  //  juce__textEditor->scrollDown();
+    juce__textEditor->setScrollToShowCursor(true);
+   // juce__textEditor->scrollEditorToPositionCaret(0, 0);
 }
 
 void LogComponent::valueTreePropertyChanged(juce::ValueTree& v, const juce::Identifier& id)

@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "XMLReader.h"
 #include "../libraries/pugixml.hpp" 
-#include "StatusLog.cpp"
+#include "StatusLog.h"
 #include "MidiUtils.h"
 
 //==============================================================================

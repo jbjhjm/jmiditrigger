@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "StatusLog.cpp"
+#include "StatusLog.h"
 #include "XMLParser.h"
 #include "../libraries/pugixml.hpp" 
 
@@ -27,7 +27,8 @@ public:
 
     bool loadXmlFile(const juce::String& filePath);
     bool loadXmlFile(const juce::File& fi);
-    void abortLoadXmlFile();
+    bool abortLoadXmlFile();
+    bool completeLoadXmlFile();
     bool reloadFile();
     bool isReady();
 

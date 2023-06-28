@@ -27,6 +27,7 @@
       <FILE id="oR3TmD" name="pugixml.hpp" compile="0" resource="0" file="libraries/pugixml.hpp"/>
     </GROUP>
     <GROUP id="{EDB187E8-38F1-489B-090F-4DB0504739F2}" name="Source">
+      <FILE id="Ox1flB" name="StatusLog.h" compile="0" resource="0" file="Source/StatusLog.h"/>
       <FILE id="AJP0sz" name="MidiUtils.h" compile="0" resource="0" file="Source/MidiUtils.h"/>
       <FILE id="vFJh9W" name="MidiUtils.cpp" compile="1" resource="0" file="Source/MidiUtils.cpp"/>
       <FILE id="LizByP" name="XMLParser.cpp" compile="1" resource="0" file="Source/XMLParser.cpp"/>
