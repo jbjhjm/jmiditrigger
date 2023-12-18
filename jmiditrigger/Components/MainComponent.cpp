@@ -88,6 +88,9 @@ MainComponent::MainComponent (JMidiTriggerAudioProcessor& p)
 
     //[Constructor] You can add your own custom stuff here..
 
+	// for unknown reasons, listening only for config state does not fire the subscriber.
+    Store::getRoot().addListener(this);
+
 
     //startTimer(200);//starts timer with interval of 200mS
 	/*
@@ -110,6 +113,8 @@ MainComponent::MainComponent (JMidiTriggerAudioProcessor& p)
 MainComponent::~MainComponent()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+
+    Store::getRoot().removeListener(this);
     //[/Destructor_pre]
 
     selectFileButton = nullptr;
@@ -179,6 +184,16 @@ void MainComponent::buttonClicked (juce::Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
+void MainComponent::valueTreePropertyChanged(juce::ValueTree& tree, const juce::Identifier& property)
+{
+    if (property == CONFIGPROPS::FilePath) {
+        DBG(">>>>> MainComponent::valueTreePropertyChanged received change notification for " + property);
+        auto& newValue = tree.getProperty(property);
+        if (newValue.isString()) {
+            filepathLabel->setText("Selected File: " + newValue.toString(), juce::NotificationType::dontSendNotification);
+        }
+    }
+}
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...

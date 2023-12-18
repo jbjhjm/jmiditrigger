@@ -35,7 +35,8 @@
                                                                     //[/Comments]
 */
 class MainComponent  : public juce::Component,
-                       public juce::Button::Listener
+                       public juce::Button::Listener,
+                       public juce::ValueTree::Listener
 {
 public:
     //==============================================================================
@@ -51,6 +52,7 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
+    void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged, const juce::Identifier& property) override;
 
     // Binary resources:
     static const char* background_png;
