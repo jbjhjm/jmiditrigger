@@ -21,9 +21,15 @@ namespace IDs
 namespace STATES
 {
     const juce::Identifier Log("Log");
+    const juce::Identifier Config("Config");
 }
 
 namespace PROPS
 {
     const juce::Identifier LogData("LogData");
+}
+
+namespace CONFIGPROPS
+{
+    const juce::Identifier FilePath("FilePath");
 }

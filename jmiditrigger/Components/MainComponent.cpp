@@ -204,6 +204,12 @@ void MainComponent::showFileDialogue()
             auto file = chooser.getResult();
             if (file.exists())
             {
+
+                auto configState = Store::getState(STATES::Config);
+                auto filePath = file.getFullPathName();
+                auto relPath = XMLReader::getInstance().getRelativeFilePath(filePath);
+
+                configState.setProperty(CONFIGPROPS::FilePath, relPath, nullptr);
                 (*audioProcessor).loadXmlFile(file);
             }
         }
