@@ -28,6 +28,28 @@ XMLReader::~XMLReader()
 }
 
 
+juce::String& XMLReader::getRelativeFilePath(const juce::File& fi)
+{
+	// TODO: should add a depth limit... a rel path like ../../../../../../../ is not good.
+	if (!fi.exists())
+	{
+		logger.log("Error - file does not exist: " + fi.getFullPathName(),1);
+		return juce::String("");
+	}
+	else
+	{
+	 	xmlFilePath = fi.getRelativePathFrom(juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile).getParentDirectory());
+	 	logger.log("relative path to config file: " + xmlFilePath.getValue().toString(),1);
+	 	//setStateValue(Identifier("xmlFilePath"), xmlFilePath.getValue().toString());
+	 	//debug("after setstatevalue");
+
+		return xmlFilePath.getValue().toString();
+
+	}
+}
+
+// TODO: resolve file from relative path
+
 bool XMLReader::loadXmlFile(const juce::File& fi)
 {
 	logger.log("Loading XML File " + fi.getFullPathName());

@@ -25,6 +25,7 @@ public:
     XMLReader();
     ~XMLReader();
 
+    juce::String& getRelativeFilePath(const juce::File& fi);
     bool loadXmlFile(const juce::String& filePath);
     bool loadXmlFile(const juce::File& fi);
     bool abortLoadXmlFile();
