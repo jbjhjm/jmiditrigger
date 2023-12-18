@@ -156,59 +156,38 @@ juce::AudioProcessorEditor* JMidiTriggerAudioProcessor::createEditor()
 //==============================================================================
 void JMidiTriggerAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    //XmlElement pluginState("pluginState");
-
-    // add some attributes to it..
-    //pluginState.setAttribute("xmlFilePath", xmlFilePath.getValue().toString());
-    //copyXmlToBinary(pluginState, destData);
+    auto& configState = Store::getState(STATES::Config);
+    //DBG(configState.toXmlString());
+    //DBG(configState.getProperty(CONFIGPROPS::FilePath).toString());
+    std::unique_ptr<juce::XmlElement> configStateAsXml (configState.createXml());
+    //DBG(configStateAsXml->toString());
+    copyXmlToBinary(*configStateAsXml, destData);
 }
 
-void JMidiTriggerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void JMidiTriggerAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    /*XmlElement* const pluginState = getXmlFromBinary(data, sizeInBytes);
-    if (pluginState) {
-        //delete pluginState;
-        //pluginState = xmlState;
-        String tmpValue;
+    // getXmlFromBinary returns a unique_ptr. Need to convert it to a regular pointer to allow passing data to importToState.
+    auto configStateAsXml = getXmlFromBinary(data, sizeInBytes);
+    if (configStateAsXml.get() == nullptr) return;
+    juce::XmlElement* regularXmlPointer = configStateAsXml.release();
 
-        tmpValue = pluginState->getStringAttribute("xmlFilePath", "");
-        if (tmpValue != "") {
-            debug("restore state, load Xml File by Path: " + tmpValue);
-            loadXmlFile(tmpValue);
-        }
+    auto configState = Store::importToState(STATES::Config, regularXmlPointer);
 
-        delete pluginState;
-    */
+    delete regularXmlPointer;
+
+	// TODO: instead of triggering manual file updates from multiple points,
+	// a State listener should be added to react accordingly and trigger XML reload.
+
+	auto filePath = configState.getProperty(CONFIGPROPS::FilePath);
+	if(filePath.isString()) {
+		loadXmlFile(filePath.toString());
+	}
+
 }
 
 
 //==============================================================================
 
-void JMidiTriggerAudioProcessor::setStateValue(juce::Identifier& key, const juce::String& value)
-{
-    /*XmlElement* valNode = pluginState->getChildByName(key);
-
-    if (!valNode) {
-        valNode = new XmlElement(key);
-        pluginState->addChildElement(valNode);
-    }
-
-    valNode->setAttribute("value",value);
-    delete valNode;*/
-    //if (pluginState) pluginState->setAttribute(key, value);
-}
-
-juce::String JMidiTriggerAudioProcessor::getStateValue(juce::Identifier& key, const juce::String& defaultValue)
-{
-    /*XmlElement* valNode = pluginState->getChildByName(key);
-    if (!valNode) return defaultValue;
-    String result = valNode->getStringAttribute("value", defaultValue);
-    delete valNode;
-    return result;*/
-    //if (pluginState) return pluginState->getStringAttribute(key, defaultValue);
-    //else return defaultValue;
-    return defaultValue;
-}
 
 bool JMidiTriggerAudioProcessor::loadXmlFile(const juce::File& fi)
 {

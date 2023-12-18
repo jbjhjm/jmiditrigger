@@ -63,8 +63,6 @@ public:
 
     //============================================================================== CUSTOM START
 
-    void setStateValue(juce::Identifier& key, const juce::String& value);
-    juce::String getStateValue(juce::Identifier& key, const juce::String& defaultValue);
     // String currentStatus = "___";
 
     bool loadXmlFile(const juce::String& filePath);
