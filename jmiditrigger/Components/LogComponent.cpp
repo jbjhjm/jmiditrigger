@@ -149,7 +149,7 @@ void LogComponent::handleAsyncUpdate()
 
 void LogComponent::valueTreePropertyChanged(juce::ValueTree& v, const juce::Identifier& id)
 {
-    DBG("valueTreePropertyChanged: " + v.getType().toString() + " " + id.toString());
+    // DBG("valueTreePropertyChanged: " + v.getType().toString() + " " + id.toString());
     // v.hasType(IDs::LogTree)
     if (id == PROPS::LogData) {
         triggerAsyncUpdate(); // calls handleAsyncUpdate

@@ -298,7 +298,7 @@ juce::String XMLParser::generateXmlDocumentation()
 	//DBG("Debug: Selected events group node " );
 
 	for (pugi::xml_node listenerNode = xmlListenersNode.child("listener"); listenerNode; listenerNode = listenerNode.next_sibling("listener")) {
-		DBG("Debug: Found a listener node");
+		// logger.log("Documenting a listener node");
 
 		MidiUtils::MidiMessageAttributes info = getMidiMessageAttributes(listenerNode);
 
@@ -330,7 +330,7 @@ juce::String XMLParser::generateXmlDocumentation()
 					XmlEventInfo* eventInfo = getEventInfoFromXml(eventIds[i]);
 
 					if (eventInfo) {
-						DBG(eventInfo->name);
+						// logger.log("Document event named "+eventInfo->name);
 						doc += "\t" + juce::String(i + 1) + " - " + eventInfo->name + "\n";
 					}
 					else {

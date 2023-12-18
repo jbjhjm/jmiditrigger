@@ -60,7 +60,7 @@ void StatusLog::addToLog(juce::String text, int indent) {
 
 void StatusLog::log(const juce::String& txt, int indent)
 {
-	DBG(txt);
+	// DBG(txt);
 	addToLog(txt, indent);
 }
 
@@ -78,14 +78,15 @@ void StatusLog::logMidiMessage(const juce::MidiMessage& message, const juce::Str
 {
 	const double time = message.getTimeStamp();
 
-	const int hours = ((int)(time / 3600.0)) % 24;
-	const int minutes = ((int)(time / 60.0)) % 60;
-	const int seconds = ((int)time) % 60;
-	const int millis = ((int)(time * 1000.0)) % 1000;
+	// useless as contained time info seems relative to something, beat or such. Output is not helpful.
+	//const int hours = ((int)(time / 3600.0)) % 24;
+	//const int minutes = ((int)(time / 60.0)) % 60;
+	//const int seconds = ((int)time) % 60;
+	//const int millis = ((int)(time * 1000.0)) % 1000;
+	//const juce::String timecode(juce::String::formatted("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis));
 
-	const juce::String timecode(juce::String::formatted("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis));
 	const juce::String description(getMidiMessageDescription(message));
-	const juce::String midiMessageString(timecode + "  -  " + description + " (" + source + ")");
+	const juce::String midiMessageString(description + " (" + source + ")");
 
 	log(midiMessageString);
 }

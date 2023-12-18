@@ -24,6 +24,7 @@ JMidiTriggerAudioProcessor::JMidiTriggerAudioProcessor()
 #endif
 {
 	logger.log("Application started");
+
 }
 
 JMidiTriggerAudioProcessor::~JMidiTriggerAudioProcessor()
@@ -203,8 +204,6 @@ bool JMidiTriggerAudioProcessor::reloadFile()
 {
 	return XMLReader::getInstance().reloadFile();
 }
-
-
 
 
 

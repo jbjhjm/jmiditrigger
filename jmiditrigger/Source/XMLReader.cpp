@@ -93,15 +93,16 @@ bool XMLReader::isReady() {
 
 bool XMLReader::loadXmlFile(const juce::String& filePath)
 {
+	// to allow for use of both absolute and relative paths, first resolve working dir.
+	// getChildFile will handle absolute paths as well, so no need to check if rel or abs.
 	const auto currentDir = juce::File::getSpecialLocation(
 		juce::File::SpecialLocationType::currentApplicationFile
 	).getParentDirectory();
 
-	// File(filePath) is only allowed for absolute paths!
 	logger.debug("load xml file (baseDir, relPath):", 1);
 	logger.debug(juce::String(currentDir.getFullPathName()), 2);
 	logger.debug(filePath, 2);
-		
+	
 	return this->loadXmlFile(currentDir.getChildFile(filePath));
 }
 
