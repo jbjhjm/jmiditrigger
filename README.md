@@ -2,6 +2,10 @@
 
 jMidiTrigger is a midi-processing VST plugin able to map Midi input, likely Notes sent from a DAW midi track, to arbitrary Midi Output data defined in a XML file.
 
+## Installation
+
+Install VC++ 2022 redistributable.
+
 ## development
 
 v2 is implemented using juce framework 7.0.5 and has valid projects for visual studio CE 2022 (C++ 145)
