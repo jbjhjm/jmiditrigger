@@ -136,7 +136,7 @@ void JMidiTriggerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (juce::MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
     {
-		logger.logMidiMessage(m, "processBlock");
+		//logger.logMidiMessage(m, "processBlock");
         processMidiInputMessage(m, midiOutput);
     }
 
@@ -161,7 +161,9 @@ void JMidiTriggerAudioProcessor::getStateInformation (juce::MemoryBlock& destDat
     //DBG(configState.toXmlString());
     //DBG(configState.getProperty(CONFIGPROPS::FilePath).toString());
     std::unique_ptr<juce::XmlElement> configStateAsXml (configState.createXml());
-    //DBG(configStateAsXml->toString());
+    DBG(configStateAsXml->toString());
+    //configStateAsXml->writeToFile()
+    //logger.log("persisting State Information.");
     copyXmlToBinary(*configStateAsXml, destData);
 }
 
@@ -180,9 +182,14 @@ void JMidiTriggerAudioProcessor::setStateInformation(const void* data, int sizeI
 	// a State listener should be added to react accordingly and trigger XML reload.
 
 	auto filePath = configState.getProperty(CONFIGPROPS::FilePath);
+
 	if(filePath.isString()) {
+        logger.log("loaded State Information. config file path: " + filePath.toString());
 		loadXmlFile(filePath.toString());
-	}
+    }
+    else {
+        logger.log("loaded State Information - no config file path found.");
+    }
 
 }
 

@@ -66,7 +66,7 @@ ValueTree Store::importToState(Identifier id, juce::XmlElement* xmlData) {
 	auto& state = Store::getRoot().getChildWithName(id);
 	StatusLog& logger = StatusLog::getInstance();
 
-	logger.log("begin importToState");
+	//logger.log("begin importToState");
 
 	if (xmlData != nullptr) {
 
@@ -93,7 +93,7 @@ ValueTree Store::importToState(Identifier id, juce::XmlElement* xmlData) {
 		{
 			auto propertyName = importedDataState.getPropertyName(i);
 			auto propertyValue = importedDataState.getProperty(propertyName);
-			logger.log("set state property " + propertyName+" to " + propertyValue.toString());
+			//logger.log("set state property " + propertyName+" to " + propertyValue.toString());
 			state.setProperty(propertyName, propertyValue, nullptr);
 		}
 

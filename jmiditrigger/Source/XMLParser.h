@@ -42,7 +42,7 @@ public:
     pugi::xpath_variable_set createListenerQueryParams(int channel, int key, juce::String type);
     bool handleMidiEvent(MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput);
     bool sendResponseForMidiEvent(pugi::xml_node& listenerNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput);
-    void generateOutputFromMidiNode(pugi::xml_node& midiNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput, int midiEventIndex);
+    void generateOutputFromMidiNode(pugi::xml_node& midiNode, MidiUtils::MidiMessageInfo& inputInfo, juce::MidiBuffer& midiOutput, int midiEventIndex, juce::String origin);
 
     StatusLog logger;// = StatusLog::getInstance();
 
