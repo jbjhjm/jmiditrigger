@@ -11,7 +11,7 @@
 #pragma once
 
 #include "IDs.cpp"
-#include "Store.cpp"
+#include "Store.h"
 #include <JuceHeader.h>
 
 class StatusLog

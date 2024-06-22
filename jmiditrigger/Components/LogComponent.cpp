@@ -19,7 +19,6 @@
 
 //[Headers] You can add your own extra header files here...
 #include "../Source/IDS.cpp"
-#include "../Source/Store.cpp"
 //[/Headers]
 
 #include "LogComponent.h"

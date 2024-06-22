@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "IDs.cpp"
-#include <JuceHeader.h>
+#include "Store.h"
+//#include "StatusLog.h"
 
 using namespace juce;
 
@@ -44,79 +44,74 @@ using namespace juce;
 	}
 }*/
 
-class Store
+
+ValueTree& Store::getRoot()
 {
-public:
+	static ValueTree instance {IDs::ROOT_STORE};
+	return instance;
+}
 
-	static ValueTree& getRoot()
-	{
-		static ValueTree instance {IDs::ROOT_STORE};
-		return instance;
+ValueTree Store::getState(Identifier id) {
+	const ValueTree& existing = Store::getRoot().getChildWithName(id);
+	if (existing.isValid()) {
+		return existing;
 	}
-
-	static ValueTree getState(Identifier id) {
-		const ValueTree& existing = Store::getRoot().getChildWithName(id);
-		if (existing.isValid()) {
-			return existing;
-		}
-		else {
-			return addState(id);
-		}
+	else {
+		return addState(id);
 	}
+}
 
-	static ValueTree importToState(Identifier id, juce::XmlElement* xmlData) {
+ValueTree Store::importToState(Identifier id, juce::XmlElement* xmlData) {
 
-		auto& state = Store::getRoot().getChildWithName(id);
+	auto& state = Store::getRoot().getChildWithName(id);
+	StatusLog& logger = StatusLog::getInstance();
 
-		if (xmlData != nullptr) {
+	logger.log("begin importToState");
 
-			// manually send a change event for all children.
-			// other solutions may be to replace or redirect the config state,
-			// described here: 
-			// https://forum.juce.com/t/add-notification-type-to-valuetrees/57145/9
-			// https://forum.juce.com/t/valuetree-callback-when-root-node-changed/37846/11
+	if (xmlData != nullptr) {
 
-			// fromXml returns a new state instance
-			auto importedDataState = ValueTree::fromXml(*xmlData);
+		// manually send a change event for all children.
+		// other solutions may be to replace or redirect the config state,
+		// described here: 
+		// https://forum.juce.com/t/add-notification-type-to-valuetrees/57145/9
+		// https://forum.juce.com/t/valuetree-callback-when-root-node-changed/37846/11
 
-			// listeners not called!
-			//state.copyPropertiesAndChildrenFrom(importedDataState, nullptr);
-			//for (const auto& child : importedDataState) {
-			//	state.sendPropertyChangeMessage(child.getType());
-			//}
+		// fromXml returns a new state instance
+		auto importedDataState = ValueTree::fromXml(*xmlData);
 
-			// manually sync imported properties.
-			// this should take care of firing listener events correctly.
-			// note that only properties are handled, children ValueTrees are skipped!
-			const int numProperties = importedDataState.getNumProperties();
-			for (int i = 0; i < numProperties; ++i)
-			{
-				auto propertyName = importedDataState.getPropertyName(i);
-				state.setProperty(propertyName, importedDataState.getProperty(propertyName), nullptr);
-			}
+		// listeners not called!
+		//state.copyPropertiesAndChildrenFrom(importedDataState, nullptr);
+		//for (const auto& child : importedDataState) {
+		//	state.sendPropertyChangeMessage(child.getType());
+		//}
 
-			DBG(">>> imported state data:");
-			DBG(state.toXmlString());
-
+		// manually sync imported properties.
+		// this should take care of firing listener events correctly.
+		// note that only properties are handled, children ValueTrees are skipped!
+		const int numProperties = importedDataState.getNumProperties();
+		for (int i = 0; i < numProperties; ++i)
+		{
+			auto propertyName = importedDataState.getPropertyName(i);
+			auto propertyValue = importedDataState.getProperty(propertyName);
+			logger.log("set state property " + propertyName+" to " + propertyValue.toString());
+			state.setProperty(propertyName, propertyValue, nullptr);
 		}
 
-		return state;
+		DBG(">>> imported state data:");
+		DBG(state.toXmlString());
+
 	}
 
-	
-
-private:
-
-	static ValueTree addState(Identifier id) {
-		const ValueTree newState = ValueTree{ id };
-		Store::getRoot().addChild(newState, 0, nullptr);
-		return newState;
-	}
+	return state;
+}
 
 
+ValueTree Store::addState(Identifier id) {
+	const ValueTree newState = ValueTree{ id };
+	Store::getRoot().addChild(newState, 0, nullptr);
+	return newState;
+}
 
 
-	
 
-};
 
