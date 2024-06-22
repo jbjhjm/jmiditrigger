@@ -63,6 +63,8 @@ LogComponent::LogComponent ()
 
 
     //[Constructor] You can add your own custom stuff here..
+     // update initial value. valueTreePropertyChanged will trigger updates for future changes.
+    triggerAsyncUpdate();
     //[/Constructor]
 }
 
@@ -150,9 +152,9 @@ void LogComponent::valueTreePropertyChanged(juce::ValueTree& v, const juce::Iden
 {
     // DBG("valueTreePropertyChanged: " + v.getType().toString() + " " + id.toString());
     // v.hasType(IDs::LogTree)
-    if (id == PROPS::LogData) {
+    //if (id == PROPS::LogData) {
         triggerAsyncUpdate(); // calls handleAsyncUpdate
-    }
+    //}
 }
 
 //[/MiscUserCode]

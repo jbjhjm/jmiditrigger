@@ -87,26 +87,10 @@ MainComponent::MainComponent (JMidiTriggerAudioProcessor& p)
 
 
     //[Constructor] You can add your own custom stuff here..
-
-	// for unknown reasons, listening only for config state does not fire the subscriber.
+    // update initial value and connect to store for future updates
+    updateFilePathField();
     Store::getRoot().addListener(this);
 
-
-    //startTimer(200);//starts timer with interval of 200mS
-	/*
-	struct sFilepathListener : public Value::Listener
-	{
-		sFilepathListener::sFilepathListener(ScopedPointer<Label> p) :parent(p) {  }
-		ScopedPointer<Label> parent;
-		void valueChanged(Value & v)  {
-			// parent->setText(v.getValue().toString(), juce::NotificationType::sendNotification);
-		}
-	};
-	sFilepathListener filepathListener(filepathLabel);
-	*/
-	//p.xmlFilePath.addListener(this);
-	//filepathLabel->getTextValue().referTo(p.xmlFilePath);
-	//startTimer(200);
     //[/Constructor]
 }
 
@@ -187,12 +171,19 @@ void MainComponent::buttonClicked (juce::Button* buttonThatWasClicked)
 void MainComponent::valueTreePropertyChanged(juce::ValueTree& tree, const juce::Identifier& property)
 {
     if (property == CONFIGPROPS::FilePath) {
-        DBG(">>>>> MainComponent::valueTreePropertyChanged received change notification for " + property);
-        auto& newValue = tree.getProperty(property);
-        if (newValue.isString()) {
-            filepathLabel->setText("Selected File: " + newValue.toString(), juce::NotificationType::dontSendNotification);
-        }
+        updateFilePathField();
     }
+}
+
+void MainComponent::updateFilePathField()
+{
+	auto configState = Store::getState(STATES::Config);
+	auto& currPathValue = configState.getProperty(CONFIGPROPS::FilePath);
+	if (currPathValue.isString()) {
+		filepathLabel->setText("Selected File: " + currPathValue.toString(), juce::NotificationType::dontSendNotification);
+	} else {
+		filepathLabel->setText("No Config file found. Select a config file to get started.", juce::NotificationType::dontSendNotification);
+	}
 }
 
 

@@ -54,6 +54,7 @@ public:
     void resized() override;
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
     void valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasChanged, const juce::Identifier& property) override;
+    void updateFilePathField();
 
     // Binary resources:
     static const char* background_png;
