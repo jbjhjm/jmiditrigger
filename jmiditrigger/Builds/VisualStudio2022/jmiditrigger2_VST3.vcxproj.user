@@ -4,4 +4,12 @@
     <LocalDebuggerCommand>$(ProjectDir)\x64\Debug\VST3\jmiditrigger2.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Reaper|x64'">
+    <LocalDebuggerCommand>$(ProjectDir)\x64\Debug\VST3\jmiditrigger2.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugReaper|x64'">
+    <LocalDebuggerCommand>F:\Sector Live\Software\Reaper\reaper.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>
