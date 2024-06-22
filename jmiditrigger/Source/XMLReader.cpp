@@ -28,7 +28,7 @@ XMLReader::~XMLReader()
 }
 
 
-juce::String& XMLReader::getRelativeFilePath(const juce::File& fi)
+juce::String XMLReader::getRelativeFilePath(const juce::File& fi)
 {
 	// TODO: should add a depth limit... a rel path like ../../../../../../../ is not good.
 	if (!fi.exists())
@@ -38,72 +38,77 @@ juce::String& XMLReader::getRelativeFilePath(const juce::File& fi)
 	}
 	else
 	{
-	 	xmlFilePath = fi.getRelativePathFrom(juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile).getParentDirectory());
-	 	logger.log("relative path to config file: " + xmlFilePath.getValue().toString(),1);
+		const auto applicationDir = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile).getParentDirectory();
+	 	juce::String relativeXmlFilePath = fi.getRelativePathFrom(applicationDir);
+	 	//logger.log(">>> relative path to config file: " + relativeXmlFilePath,1);
 	 	//setStateValue(Identifier("xmlFilePath"), xmlFilePath.getValue().toString());
 	 	//debug("after setstatevalue");
 
-		return xmlFilePath.getValue().toString();
+		return relativeXmlFilePath;
 
 	}
 }
 
-// TODO: resolve file from relative path
-
-bool XMLReader::loadXmlFile(const juce::File& fi)
+juce::String solveRelativeFilePath(const juce::String& path)
 {
-	logger.log("Loading XML File " + fi.getFullPathName());
-	if (!fi.exists())
+	if(juce::File::isAbsolutePath(path))
 	{
-		logger.log("Error - file does not exist: " + fi.getFullPathName(),1);
-		xmlFilePath = "";
-		return abortLoadXmlFile();
+		return path;
 	}
 	else
 	{
-	 	xmlFilePath = fi.getRelativePathFrom(juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile).getParentDirectory());
-	 	logger.log("relative path to config file: " + xmlFilePath.getValue().toString(),1);
-	 	//setStateValue(Identifier("xmlFilePath"), xmlFilePath.getValue().toString());
-	 	//debug("after setstatevalue");
-
-	 	pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(fi.getFullPathName().toRawUTF8());
-
-	 	if (xmlReadSuccess == false) {
-	 		logger.log("Error while reading file: " + juce::String(xmlReadSuccess.description()),1);
-			return abortLoadXmlFile();
-		}
-	 	else 
-		{
-	 		logger.log("Successfully parsed file." ,1);
-	 		if (!parser->loadXmlData(&xmlDoc)) { 
-				return abortLoadXmlFile();
-			};
-
-			documentation = parser->generateXmlDocumentation();
-			return completeLoadXmlFile();
-		}
+		// to allow for use of both absolute and relative paths, first resolve working dir.
+		// getChildFile will handle absolute paths as well, so no need to check if rel or abs.
+		const auto applicationDir = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile).getParentDirectory();
+		const auto& resolvedFile = applicationDir.getChildFile(path);
+		return resolvedFile.getFullPathName();
 	}
 }
+
+// overload: from juce::File
+bool XMLReader::loadXmlFile(const juce::File& fi)
+{
+	if (!fi.exists())
+	{
+		return abortLoadXmlFile();
+	}
+
+	xmlFilePath.setValue(fi.getFullPathName());
+
+	pugi::xml_parse_result xmlReadSuccess = xmlDoc.load_file(fi.getFullPathName().toRawUTF8());
+
+	if (xmlReadSuccess == false) {
+		logger.log("Error while reading file: " + juce::String(xmlReadSuccess.description()),1);
+		return abortLoadXmlFile();
+	}
+	else 
+	{
+		logger.log("Successfully parsed file." ,1);
+		if (!parser->loadXmlData(&xmlDoc)) { 
+			return abortLoadXmlFile();
+		};
+
+		documentation = parser->generateXmlDocumentation();
+		return completeLoadXmlFile();
+	}
+	
+}
+
+// overload: from juce::String
+bool XMLReader::loadXmlFile(const juce::String& filePath)
+{
+	const auto resolvedPath = solveRelativeFilePath(filePath);
+	const auto& fi = juce::File(resolvedPath);
+
+	logger.debug("load xml file " + resolvedPath, 1);
+	
+	return this->loadXmlFile(fi);
+}
+
 
 bool XMLReader::isReady() {
 	if (!parser) return false;
 	return parser->xmlReadyState;
-}
-
-
-bool XMLReader::loadXmlFile(const juce::String& filePath)
-{
-	// to allow for use of both absolute and relative paths, first resolve working dir.
-	// getChildFile will handle absolute paths as well, so no need to check if rel or abs.
-	const auto currentDir = juce::File::getSpecialLocation(
-		juce::File::SpecialLocationType::currentApplicationFile
-	).getParentDirectory();
-
-	logger.debug("load xml file (baseDir, relPath):", 1);
-	logger.debug(juce::String(currentDir.getFullPathName()), 2);
-	logger.debug(filePath, 2);
-	
-	return this->loadXmlFile(currentDir.getChildFile(filePath));
 }
 
 bool XMLReader::abortLoadXmlFile()

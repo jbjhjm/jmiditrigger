@@ -215,17 +215,17 @@ void MainComponent::showFileDialogue()
         juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
         [this](const juce::FileChooser& chooser)
         {
-
+            auto logger = StatusLog::getInstance();
             auto file = chooser.getResult();
             if (file.exists())
             {
 
                 auto configState = Store::getState(STATES::Config);
-                auto filePath = file.getFullPathName();
-                auto relPath = XMLReader::getInstance().getRelativeFilePath(filePath);
-
+                juce::var relPath = juce::var(XMLReader::getInstance().getRelativeFilePath(file));
+                logger.log("resolved selected file to maybe-relative path: " + relPath.toString());
                 configState.setProperty(CONFIGPROPS::FilePath, relPath, nullptr);
-                (*audioProcessor).loadXmlFile(file);
+				
+                (*audioProcessor).loadXmlFile(relPath.toString());
             }
         }
     );
