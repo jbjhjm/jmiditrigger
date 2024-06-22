@@ -221,7 +221,7 @@ void MainComponent::showFileDialogue()
             {
 
                 auto configState = Store::getState(STATES::Config);
-                juce::var relPath = juce::var(XMLReader::getInstance().getRelativeFilePath(file));
+                juce::var relPath = juce::var(FileUtils::getRelativeFilePath(file));
                 logger.log("resolved selected file to maybe-relative path: " + relPath.toString());
                 configState.setProperty(CONFIGPROPS::FilePath, relPath, nullptr);
 				

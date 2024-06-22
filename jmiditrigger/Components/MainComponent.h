@@ -22,6 +22,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include <JuceHeader.h>
 #include "../Source/PluginProcessor.h"
+#include "../Source/FileUtils.h"
 //[/Headers]
 
 
