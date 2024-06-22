@@ -11,6 +11,7 @@
 #pragma once
 
 #include "StatusLog.h"
+#include "Constants.h"
 
 juce::String makeIndentation(int indent)
 {
@@ -47,8 +48,22 @@ juce::String StatusLog::getLog()
 }
 
 void StatusLog::addToLog(juce::String text, int indent) {
-	const juce::String logData = getLog();
-	logTree.setProperty(PROPS::LogData, logData+"\n"+ makeIndentation(indent)+text, nullptr);
+	juce::String existingLogData = getLog();
+
+	// apply a simple trim solution based on char count in log
+	const auto existingLogDataLength = existingLogData.length();
+	if (existingLogDataLength > MAX_LOG_LENGTH) {
+		const auto cutOffIndex = existingLogData.indexOf(existingLogDataLength - MAX_LOG_LENGTH, "\n");
+		if (cutOffIndex == -1) {
+			existingLogData = "[...]\n" + existingLogData.substring(existingLogDataLength - MAX_LOG_LENGTH);
+		}
+		else {
+			existingLogData = "[...]\n" + existingLogData.substring(cutOffIndex + 1);
+		}
+	}
+
+	const juce::String newLogData = existingLogData + "\n" + makeIndentation(indent) + text;
+	logTree.setProperty(PROPS::LogData, newLogData, nullptr);
 }
 
 /*void logMidiMessage(const juce::String& txt)
